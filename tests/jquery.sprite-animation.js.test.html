@@ -1,0 +1,110 @@
+<!DOCTYPE html> 
+<html lang="en"> 
+<head> 
+	<meta charset="utf-8" /> 
+	<title>jQuery Sprite Animation test suite</title> 
+	
+	<link rel="stylesheet" href="../qunit/qunit.css" type="text/css"/>
+	
+	<style type="text/css">
+  		#div {
+  			width: 1px;
+  			height: 1px;
+  			background: transparent url(img/spot-normal.png) no-repeat 0px 0px;
+  		}
+  	</style>
+</head>
+<body>
+	<h1 id="qunit-header">jQuery Sprite Animation</h1>  
+    <h2 id="qunit-banner"></h2>  
+    <h2 id="qunit-userAgent"></h2>  
+    <ol id="qunit-tests"></ol>
+	
+	<div id="div"></div>
+
+	<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js"></script>
+	<script src="../jquery.sprite-animation.js"></script> 
+	<script src="../qunit/qunit.js"></script>
+	<script>
+	(function ($) {
+		
+		var _private = $.spriteAnimation._private,
+			$div = $('#div');
+		
+		function runTests () {
+			
+			module('jQuery.sprite-animation.defaults');
+			
+			test('defaults', function () {
+				equal($.spriteAnimation.defaults.cols, 1, '1 cols by default');
+				equal($.spriteAnimation.defaults.rows, 3, '3 rows by default');
+				equal($.spriteAnimation.defaults.speed(), 500, '500ms by default');
+				equal($.spriteAnimation.defaults.count(), 3, '3 items by default');
+			});
+			
+			module('jQuery.fn.sprite-animation');
+			
+			test('_createBackgroundPosition', function () {
+				equal(_private._createBackgroundPosition(0,0), '0px 0px','0,0');
+				equal(_private._createBackgroundPosition(10,0), '10px 0px','10,0');
+				equal(_private._createBackgroundPosition(10,20), '10px 20px','10,20');
+			});
+			
+			test('_preAnimate', function () {
+				var o = $.extend({}, $.spriteAnimation.defaults ,{
+					cols: 2, 		// number of column in the sprite
+					rows: 2, 		// number of rows in the sprite
+					iterations: 1,
+					currentIndex: 0,
+					currentRow: 0,
+					currentCol: 0,
+					currentIteration: 0
+				});
+				
+				equal(o.currentIndex, 0, 'currentIndex = 0');
+				
+				ok(_private._preAnimate(o), 'first step');
+				equal(o.currentIndex, 1, 'currentIndex = 1');
+				
+				ok(_private._preAnimate(o), 'second step');
+				equal(o.currentIndex, 2, 'currentIndex = 2');
+				
+				ok(_private._preAnimate(o), 'third step');
+				equal(o.currentIndex, 3, 'currentIndex = 3');
+				
+				ok(!_private._preAnimate(o), 'fourth step');
+				equal(o.currentIndex, 0, 'currentIndex = 0');
+				
+				ok(_private._preAnimate(o), 'fifth step');
+				equal(o.currentIndex, 1, 'currentIndex = 1');
+			});
+			
+			test('_transition', function () {
+				var o = {
+					currentCol:1,
+					currentRow:1,
+					width: 10,
+					height: 20
+				};
+				_private._transition($div, o);
+				
+				equal($div.css('background-position'), '-10px -20px', '10x20');
+			});
+			
+			test('spriteAnimation', function () {
+				/*$div.spriteAnimation({
+					rows:1,
+					cols:2,
+					speed: function () {return 0;}
+				});*/
+				
+				expect(0);
+			});
+		};
+		
+		$(runTests);
+		
+	})(jQuery);
+	</script>
+</body>
+</html>

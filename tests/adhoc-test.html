@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+
+  <title>adhoc-test</title>
+  
+  <style type="text/css">
+  		#animation {
+  			width: 45px;
+  			height: 45px;
+  			background: transparent url(img/spot-normal.png) no-repeat 0px 0px;
+  		}
+  </style>
+</head>
+<body>
+  <div>
+    <header>
+      <h1>adhoc-test</h1>
+    </header>
+    
+    <div>
+      <div id="animation">
+      	
+      </div>
+    </div>
+
+    <footer>
+     <p>&copy; Copyright Deux Huit Huit</p>
+    </footer>
+    
+    <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js"></script>
+	<script src="../jquery.sprite-animation.js"></script> 
+	<script>
+	(function ($) {
+		
+		$(function () {
+			$('#animation').spriteAnimation({
+				
+			});
+		});
+		
+	})(jQuery);
+	</script>
+  </div>
+</body>
+</html>
