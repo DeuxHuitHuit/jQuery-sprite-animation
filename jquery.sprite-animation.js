@@ -75,7 +75,7 @@
 			
 			// detect iteration overflow
 			shouldAdvance = o.iterations == 0 ||  // unlimited
-							(o.iterations != 0 && o.current.iteration < o.iterations); // limited
+						   (o.iterations != 0 && o.current.iteration < o.iterations); // limited
 		} 
 		
 		// detect col overflow
@@ -103,7 +103,7 @@
 			speed = o.speed(o.current.col, o.current.row, o.count());
 		}
 		
-		// assure
+		// assure value is numeric
 		if (!$.isNumeric(speed)) {
 			speed = 0;
 		}
@@ -115,7 +115,7 @@
 	};
 	
 	function _nextFrame(elem, o) {
-		setTimeout(function () {
+		timer = setTimeout(function () {
 			_animate(elem, o);
 		}, _getSpeed(o));
 	};
@@ -138,40 +138,50 @@
 		}
 	};
 	
+	var timer = null;
+	
 	// actual plugin
 	$.fn.spriteAnimation = function (options) {
 		if (!this.each || !this[0]) {
 			return this;
 		}
 		
-		var o = $.extend({}, $.spriteAnimation.defaults, options);
-
-		return this.each(function (index, elem) {
-			var t = $(elem),
-				d = $.extend(true, o, {
-					// extend the current object in it
-					current : {
-						row: o.startRow,
-						col: o.startCol,
-						iteration: 0,
-						index: (o.startRow * o.cols) + o.startCol,
-						delay: 0
-					}
-				});
-			
-			if (d.width == 'auto') {
-				d.width = t.width();
+		if (options === 'stop') {
+			clearTimeout(timer);
+			timer = null;
+			return this;
+		}
+		
+		var o = $.extend({}, $.spriteAnimation.defaults, options),
+			t = $(this);
+		
+		// extend o with the current object
+		o = $.extend(true, o, {
+			// extend the current object in it
+			current : {
+				row: options.startRow,
+				col: options.startCol,
+				iteration: 0,
+				index: (o.startRow * o.cols) + o.startCol,
+				delay: 0
 			}
-			if (d.height == 'auto') {
-				d.height = t.height();
-			}
-			
-			// set initial values
-			_transition(t, o);
-			
-			// start animation
-			_nextFrame(t, d, 0);
 		});
+		
+		if (o.width == 'auto') {
+			o.width = t.width();
+		}
+		if (o.height == 'auto') {
+			o.height = t.height();
+		}
+		
+		// set initial values
+		_transition(t, o);
+		
+		// start animation
+		_nextFrame(t, o);
+		//});
+		
+		return this;
 	};
 	
 })(jQuery);

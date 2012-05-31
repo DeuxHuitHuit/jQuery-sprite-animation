@@ -61,26 +61,33 @@
 						col: 0,
 						iteration: 0,
 						delay: 0
-					}
+					},
+					delay: 1
 				});
 				
 				equal(o.current.index, 0, 'current index = 0');
+				equal(o.current.delay, 0, 'current delay = 0');
 				
 				ok(_private._preAnimate(o), 'first step');
 				equal(o.current.index, 1, 'current index = 1');
+				equal(o.current.delay, 0, 'current delay = 0');
 				
 				ok(_private._preAnimate(o), 'second step');
 				equal(o.current.index, 2, 'current index = 2');
+				equal(o.current.delay, 0, 'current delay = 0');
 				
 				ok(_private._preAnimate(o), 'third step');
 				equal(o.current.index, 3, 'current index = 3');
+				equal(o.current.delay, 0, 'current delay = 0');
 				
 				ok(!_private._preAnimate(o), 'fourth step');
 				equal(o.current.index, 0, 'current index = 0');
 				equal(o.current.iteration, 1, 'iteration is now 1');
+				equal(o.current.delay, 1, 'current delay is now 1');
 				
 				ok(_private._preAnimate(o), 'fifth step');
 				equal(o.current.index, 1, 'current index = 1');
+				equal(o.current.delay, 0, 'current delay = 0');
 			});
 			
 			test('_getSpeed', function () {
@@ -115,6 +122,10 @@
 				o.speed = 40;
 				o.current.delay = 30;
 				equal(_private._getSpeed(o), 70, '40+30');
+				
+				o.speed = 'show';
+				o.current.delay = 0;
+				equal(_private._getSpeed(o), $.spriteAnimation.defaults.speed, 'show = default');
 			});
 			
 			test('_transition', function () {
