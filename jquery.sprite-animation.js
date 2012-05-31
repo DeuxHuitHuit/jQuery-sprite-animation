@@ -16,11 +16,13 @@
 			defaults : {
 				cols: 1, 		// number of column in the sprite
 				rows: 3, 		// number of rows in the sprite
-								// function that returns number of ms between
-				speed: function (col, row, total) {	
-					return 500;
-				},
+				speed: 100,		// number of ms between each frame
+				// can also be a function that returns number of ms between each frame
+				// speed: function (col, row, total) {	
+				//	return 10 * col;
+				// },
 				iterations: 0, 	// number of iteration (0 for infinite)
+				delay: 0,		// number of ms added at the end of each iteration
 				width: 'auto', 	// auto | number of pixel per step
 				height: 'auto',	// auto | number of pixel per step
 				startCol: 0,	// start col offset
@@ -31,7 +33,8 @@
 			_private: {
 				_createBackgroundPosition: _createBackgroundPosition,
 				_preAnimate: _preAnimate,
-				_transition: _transition
+				_transition: _transition,
+				_getSpeed: _getSpeed
 			}
 		}
 	});
@@ -45,46 +48,80 @@
 	
 	function _preAnimate(o) {
 		// increment index, always
-		o.currentIndex ++;
+		o.current.index ++;
 		
-		var endOverflow = o.currentIndex >= o.count(),
-			rowOverflow = o.currentRow+1 >= o.rows,
-			colOverflow = o.currentCol+1 >= o.cols,
+		// reset the delay
+		o.current.delay = 0;
+		
+		// detect overflows
+		var endOverflow = o.current.index >= o.count(),
+			rowOverflow = o.current.row+1 >= o.rows,
+			colOverflow = o.current.col+1 >= o.cols,
 			shouldAdvance = true;
 		
 		// detect end overflow
 		if ( endOverflow ) {
 			
 			// increment iteration count
-			o.currentIteration++;
+			o.current.iteration ++;
 			
 			// restart from the beginning
-			o.currentIndex = 0;
-			o.currentRow = 0;
-			o.currentCol = 0;
+			o.current.index = 0;
+			o.current.row = 0;
+			o.current.col = 0;
+			
+			// add the delay
+			o.current.delay = o.delay;
 			
 			// detect iteration overflow
-			shouldAdvance = o.iterations == 0 || o.currentIteration < o.iterations;
+			shouldAdvance = o.iterations == 0 ||  // unlimited
+							(o.iterations != 0 && o.current.iteration < o.iterations); // limited
 		} 
 		
 		// detect col overflow
 		else if (colOverflow && !rowOverflow) {
-			o.currentRow++;
-			o.currentCol = 0;
-		} else {
-			o.currentCol++;
+			o.current.row++;
+			o.current.col = 0;
 		}
+		
+		// advance
+		else {
+			o.current.col++;
+		}
+		
 		return shouldAdvance;
 	};
 	
-	function _nextStep(elem, o) {
+	function _getSpeed(o) {
+		// get default value
+		var speed = $.spriteAnimation.defaults.speed;
+		
+		// evaluate
+		if ($.isNumeric(o.speed)) {
+			speed = o.speed;
+		} else if ($.isFunction(o.speed)) {
+			speed = o.speed(o.current.col, o.current.row, o.count());
+		}
+		
+		// assure
+		if (!$.isNumeric(speed)) {
+			speed = 0;
+		}
+		
+		// add current delay
+		speed += o.current.delay;
+		
+		return speed;
+	};
+	
+	function _nextFrame(elem, o) {
 		setTimeout(function () {
 			_animate(elem, o);
-		}, o.speed(o.currentRow, o.currentCol, o.count()));
+		}, _getSpeed(o));
 	};
 	
 	function _transition(elem, o) {
-		elem.css({'background-position': _createBackgroundPosition(-o.currentCol * o.width, -o.currentRow * o.height) });
+		elem.css({'background-position': _createBackgroundPosition(-o.current.col * o.width, -o.current.row * o.height) });
 	};
 	
 	function _animate(elem, o) {
@@ -97,7 +134,7 @@
 		
 		// next step
 		if (shouldAdvance) {
-			_nextStep(elem, o);
+			_nextFrame(elem, o);
 		}
 	};
 	
@@ -112,10 +149,14 @@
 		return this.each(function (index, elem) {
 			var t = $(elem),
 				d = $.extend(true, o, {
-					currentRow: o.startRow,
-					currentCol: o.startCol,
-					currentIteration: 0,
-					currentIndex: (o.startRow * o.cols) + o.startCol
+					// extend the current object in it
+					current : {
+						row: o.startRow,
+						col: o.startCol,
+						iteration: 0,
+						index: (o.startRow * o.cols) + o.startCol,
+						delay: 0
+					}
 				});
 			
 			if (d.width == 'auto') {
@@ -125,12 +166,11 @@
 				d.height = t.height();
 			}
 			
-			
 			// set initial values
 			_transition(t, o);
 			
 			// start animation
-			_nextStep(t, d);
+			_nextFrame(t, d, 0);
 		});
 	};
 	

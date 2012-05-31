@@ -38,7 +38,7 @@
 			test('defaults', function () {
 				equal($.spriteAnimation.defaults.cols, 1, '1 cols by default');
 				equal($.spriteAnimation.defaults.rows, 3, '3 rows by default');
-				equal($.spriteAnimation.defaults.speed(), 500, '500ms by default');
+				equal($.spriteAnimation.defaults.speed,100, '100ms by default');
 				equal($.spriteAnimation.defaults.count(), 3, '3 items by default');
 			});
 			
@@ -51,44 +51,97 @@
 			});
 			
 			test('_preAnimate', function () {
-				var o = $.extend({}, $.spriteAnimation.defaults ,{
+				var o = $.extend({}, $.spriteAnimation.defaults, {
 					cols: 2, 		// number of column in the sprite
 					rows: 2, 		// number of rows in the sprite
 					iterations: 1,
-					currentIndex: 0,
-					currentRow: 0,
-					currentCol: 0,
-					currentIteration: 0
+					current: {
+						index: 0,
+						row: 0,
+						col: 0,
+						iteration: 0,
+						delay: 0
+					}
 				});
 				
-				equal(o.currentIndex, 0, 'currentIndex = 0');
+				equal(o.current.index, 0, 'current index = 0');
 				
 				ok(_private._preAnimate(o), 'first step');
-				equal(o.currentIndex, 1, 'currentIndex = 1');
+				equal(o.current.index, 1, 'current index = 1');
 				
 				ok(_private._preAnimate(o), 'second step');
-				equal(o.currentIndex, 2, 'currentIndex = 2');
+				equal(o.current.index, 2, 'current index = 2');
 				
 				ok(_private._preAnimate(o), 'third step');
-				equal(o.currentIndex, 3, 'currentIndex = 3');
+				equal(o.current.index, 3, 'current index = 3');
 				
 				ok(!_private._preAnimate(o), 'fourth step');
-				equal(o.currentIndex, 0, 'currentIndex = 0');
+				equal(o.current.index, 0, 'current index = 0');
+				equal(o.current.iteration, 1, 'iteration is now 1');
 				
 				ok(_private._preAnimate(o), 'fifth step');
-				equal(o.currentIndex, 1, 'currentIndex = 1');
+				equal(o.current.index, 1, 'current index = 1');
+			});
+			
+			test('_getSpeed', function () {
+				var o = $.extend(true, {}, $.spriteAnimation.defaults ,{
+					speed: undefined,
+					current: {
+						index: 0,
+						row: 0,
+						col: 2,
+						iteration: 0,
+						delay: 0
+					}
+				});
+				
+				equal(_private._getSpeed(o), $.spriteAnimation.defaults.speed, 'undefined speed = default');
+			
+				o.speed = 50;
+				equal(_private._getSpeed(o), 50, '50');
+				
+				o.speed = function (col, row, total) {
+					return (col * row) + total;
+				};
+				equal(_private._getSpeed(o), 3, 'col * row + total');
+				
+				o.current.row = 4;
+				o.current.col = 0;
+				o.speed = function (col, row, total) {
+					return (row + total);
+				};
+				equal(_private._getSpeed(o), 7, 'row + total');
+				
+				o.speed = 40;
+				o.current.delay = 30;
+				equal(_private._getSpeed(o), 70, '40+30');
 			});
 			
 			test('_transition', function () {
-				var o = {
-					currentCol:1,
-					currentRow:1,
+				var o = $.extend({}, $.spriteAnimation.defaults ,{
 					width: 10,
-					height: 20
-				};
-				_private._transition($div, o);
+					height: 20,
+					current: {
+						index: 3,
+						row: 1,
+						col: 1,
+						iteration: 0,
+						delay: 0
+					}
+				});
 				
+				_private._transition($div, o);
 				equal($div.css('background-position'), '-10px -20px', '10x20');
+				
+				o.current.col = 4;
+				o.current.row = 0;
+				_private._transition($div, o);
+				equal($div.css('background-position'), '-40px 0px', '40x0');
+				
+				o.current.col = 0;
+				o.current.row = 2;
+				_private._transition($div, o);
+				equal($div.css('background-position'), '0px -40px', '0x40');
 			});
 			
 			test('spriteAnimation', function () {
