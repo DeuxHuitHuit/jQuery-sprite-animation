@@ -5,7 +5,7 @@ before_script:
   - "export DISPLAY=:99.0"
   - "sh -e /etc/init.d/xvfb start"
   - npm install connect
-  - node ./tests/server.js ../tests/ 8080 &
+  - node ./qunit/server.js ../tests/ 8080 &
   - sleep 5
 script:
   - /usr/local/bin/phantomjs ./qunit/runner.js http://localhost:8080/jquery.sprite-animation.js.test.html#1.7
