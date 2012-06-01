@@ -1,9 +1,14 @@
 language: nodejs
+node_js:
+  - 0.6
 before_script:
   - "export DISPLAY=:99.0"
   - "sh -e /etc/init.d/xvfb start"
+  - npm install connect
+  - node test/js/server.js ../tests/ 8080 &
+  - sleep 5
 script:
-  - /usr/local/bin/phantomjs ./qunit/runner.js ./tests/jquery.sprite-animation.js.test.html 1.7
-  - /usr/local/bin/phantomjs ./qunit/runner.js ./tests/jquery.sprite-animation.js.test.html 1.6
-  - /usr/local/bin/phantomjs ./qunit/runner.js ./tests/jquery.sprite-animation.js.test.html 1.5
-  - /usr/local/bin/phantomjs ./qunit/runner.js ./tests/jquery.sprite-animation.js.test.html 1.4
+  - /usr/local/bin/phantomjs ./qunit/runner.js http://localhost:8080/jquery.sprite-animation.js.test.html#1.7
+  - /usr/local/bin/phantomjs ./qunit/runner.js http://localhost:8080/jquery.sprite-animation.js.test.html#1.6
+  - /usr/local/bin/phantomjs ./qunit/runner.js http://localhost:8080/jquery.sprite-animation.js.test.html#1.5
+  - /usr/local/bin/phantomjs ./qunit/runner.js http://localhost:8080/jquery.sprite-animation.js.test.html#1.4

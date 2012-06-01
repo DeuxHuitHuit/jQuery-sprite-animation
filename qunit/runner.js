@@ -27,8 +27,6 @@ page.open(url, function(status){
 		console.log("Unable to access network: " + status);
 		phantom.exit(1);
 	} else {
-		window.jQueryVersion = phantom.args[1];
-		console.log(phantom.args[1]);
 		// page.evaluate(addLogging);
 		var interval = setInterval(function() {
 			if (finished()) {
