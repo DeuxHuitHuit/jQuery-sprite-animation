@@ -4,7 +4,7 @@ before_script:
   - "sh -e /etc/init.d/xvfb start"
 script:
   - echo Testing jQuery 1.7
-  - /usr/local/bin/phantomjs ./qunit/runner.js ./tests/jquery.sprite-animation.js.test.html?jQuery=1.7
+  - /usr/local/bin/phantomjs ./qunit/runner.js "./tests/jquery.sprite-animation.js.test.html?jQuery=1.7"
   - echo Testing jQuery 1.6
   - /usr/local/bin/phantomjs ./qunit/runner.js ./tests/jquery.sprite-animation.js.test.html?jQuery=1.6
   - echo Testing jQuery 1.5
