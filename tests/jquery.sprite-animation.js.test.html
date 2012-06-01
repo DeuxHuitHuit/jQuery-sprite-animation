@@ -16,8 +16,9 @@
 	
 	<script>
 		(function (d) {
-			var version = !!d.location.hash ? d.location.hash.slice(1) : '1.7.2';
+			var version = !!window.jQueryVersion ? window.jQueryVersion : '1.7.2';
 			d.write('<script src="http://ajax.googleapis.com/ajax/libs/jquery/'+version+'/jquery.min.js">' + "<" + '/' + 'script>');
+			console.log('Loading jQuery v' + version);
 		})(window.document);
 	</script>
 </head>
@@ -39,10 +40,6 @@
 			$div = $('#div');
 		
 		function runTests () {
-			
-			QUnit.log(function(){
-				return 'Testing against jQuery v' + $().jquery
-			});
 			
 			module('jQuery.sprite-animation.defaults');
 			

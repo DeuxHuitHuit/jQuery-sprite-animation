@@ -12,6 +12,8 @@
 
 var url = phantom.args[0];
 
+window.jQueryVersion = phantom.args[1];
+
 var page = require('webpage').create();
 
 // Route "console.log()" calls from within the Page context to the main Phantom context (i.e. current "this")
