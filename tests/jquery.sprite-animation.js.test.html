@@ -13,6 +13,13 @@
   			background: transparent url(img/spot-normal.png) no-repeat 0px 0px;
   		}
   	</style>
+	
+	<script>
+		(function (d) {
+			var version = !!d.location.hash ? d.location.hash.slice(1) : '1.7.2';
+			d.write('<script src="http://ajax.googleapis.com/ajax/libs/jquery/'+version+'/jquery.min.js">' + "<" + '/' + 'script>');
+		})(window.document);
+	</script>
 </head>
 <body>
 	<h1 id="qunit-header">jQuery Sprite Animation</h1>  
@@ -22,7 +29,7 @@
 	
 	<div id="div"></div>
 
-	<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js"></script>
+	<!--script src="http://ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js"></script-->
 	<script src="../jquery.sprite-animation.js"></script> 
 	<script src="../qunit/qunit.js"></script>
 	<script>
@@ -32,6 +39,10 @@
 			$div = $('#div');
 		
 		function runTests () {
+			
+			QUnit.log(function(){
+				return 'Testing against jQuery v' + $().jquery
+			});
 			
 			module('jQuery.sprite-animation.defaults');
 			
@@ -43,6 +54,20 @@
 			});
 			
 			module('jQuery.fn.sprite-animation');
+			
+			test('_isNumeric', function () {
+				ok(!_private._isNumeric(null), 		'null');
+				ok(!_private._isNumeric(undefined), 'undefined');
+				ok(!_private._isNumeric(true), 		'0');
+				ok(!_private._isNumeric(false), 	'1');
+				ok(_private._isNumeric(0), 			'0');
+				ok(_private._isNumeric(1), 			'1');
+				ok(_private._isNumeric(0.5), 		'0');
+				ok(_private._isNumeric('1'), 		'"1"');
+				ok(_private._isNumeric('198.005'), 	'"198.005"');
+				ok(!_private._isNumeric('48bits'), 	'"48 bits"');
+				ok(!_private._isNumeric('bits 48'), '"bits 48"');
+			});
 			
 			test('_createBackgroundPosition', function () {
 				equal(_private._createBackgroundPosition(0,0), '0px 0px','0,0');

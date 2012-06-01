@@ -34,12 +34,25 @@
 				_createBackgroundPosition: _createBackgroundPosition,
 				_preAnimate: _preAnimate,
 				_transition: _transition,
-				_getSpeed: _getSpeed
+				_getSpeed: _getSpeed,
+				_isNumeric: _isNumeric
 			}
 		}
 	});
 	
-	//
+	// patching older version of jquery
+	function _isNumeric(val) {
+		var isNum = false;
+		if ($.isFunction($.isNumeric)) {
+			isNum = $.isNumeric(val);
+		} else if ($.isFunction($.isNaN)) {
+			isNum = !$.isNaN(val);
+		} else {
+			isNum = val != null && !window.isNaN(val);
+		}
+		
+		return isNum;
+	};
 	
 	// private methods
 	function _createBackgroundPosition(x, y) {
@@ -97,14 +110,14 @@
 		var speed = $.spriteAnimation.defaults.speed;
 		
 		// evaluate
-		if ($.isNumeric(o.speed)) {
+		if (_isNumeric(o.speed)) {
 			speed = o.speed;
 		} else if ($.isFunction(o.speed)) {
 			speed = o.speed(o.current.col, o.current.row, o.count());
 		}
 		
 		// assure value is numeric
-		if (!$.isNumeric(speed)) {
+		if (!_isNumeric(speed)) {
 			speed = 0;
 		}
 		
