@@ -71,8 +71,8 @@
 			test('_isNumeric', function () {
 				ok(!_private._isNumeric(null), 		'null');
 				ok(!_private._isNumeric(undefined), 'undefined');
-				ok(!_private._isNumeric(true), 		'0');
-				ok(!_private._isNumeric(false), 	'1');
+				ok(!_private._isNumeric(true), 		'true');
+				ok(!_private._isNumeric(false), 	'false');
 				ok(_private._isNumeric(0), 			'0');
 				ok(_private._isNumeric(1), 			'1');
 				ok(_private._isNumeric(0.5), 		'0');

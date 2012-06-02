@@ -48,7 +48,7 @@
 		} else if ($.isFunction($.isNaN)) {
 			isNum = !$.isNaN(val);
 		} else {
-			isNum = val != null && !window.isNaN(val);
+			isNum = val !== true && val !== false && val != null && !window.isNaN(val);
 		}
 		
 		return isNum;
