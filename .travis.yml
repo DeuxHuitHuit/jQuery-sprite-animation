@@ -1,6 +1,5 @@
 language: nodejs
 node_js:
-  - 0.6
   - 0.7
 notifications:
   email: false
@@ -9,11 +8,9 @@ before_script:
   - "sh -e /etc/init.d/xvfb start"
   - node --version
   - npm install connect
-  - node ./qunit/server.js /../tests 8080 &
+  - node ./qunit/server.js /../ 8080 &
   - sleep 3
 script:
-  - curl http://www.google.com:80/
-  - curl http://127.0.0.1:8080/adhoc-test.html
   - /usr/local/bin/phantomjs ./qunit/runner.js 'http://localhost:8080/jquery.sprite-animation.js.test.html?jquery=1.7'
   # /usr/local/bin/phantomjs ./qunit/runner.js http://localhost:8080/jquery.sprite-animation.js.test.html?notrycatch=true&noglobals=true&jquery=1.6
   # /usr/local/bin/phantomjs ./qunit/runner.js http://localhost:8080/jquery.sprite-animation.js.test.html?notrycatch=true&noglobals=true&jquery=1.5
