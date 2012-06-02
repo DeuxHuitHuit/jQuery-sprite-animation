@@ -12,6 +12,6 @@ before_script:
   - sleep 3
 script:
   - /usr/local/bin/phantomjs ./qunit/runner.js 'http://localhost:8080/tests/jquery.sprite-animation.js.test.html?jquery=1.7'
-  # /usr/local/bin/phantomjs ./qunit/runner.js http://localhost:8080/tests/jquery.sprite-animation.js.test.html?notrycatch=true&noglobals=true&jquery=1.6
-  # /usr/local/bin/phantomjs ./qunit/runner.js http://localhost:8080/tests/jquery.sprite-animation.js.test.html?notrycatch=true&noglobals=true&jquery=1.5
-  # /usr/local/bin/phantomjs ./qunit/runner.js http://localhost:8080/tests/jquery.sprite-animation.js.test.html?notrycatch=true&noglobals=true&jquery=1.4
+  - /usr/local/bin/phantomjs ./qunit/runner.js http://localhost:8080/tests/jquery.sprite-animation.js.test.html?notrycatch=true&noglobals=true&jquery=1.6
+  - /usr/local/bin/phantomjs ./qunit/runner.js http://localhost:8080/tests/jquery.sprite-animation.js.test.html?notrycatch=true&noglobals=true&jquery=1.5
+  - /usr/local/bin/phantomjs ./qunit/runner.js http://localhost:8080/tests/jquery.sprite-animation.js.test.html?notrycatch=true&noglobals=true&jquery=1.4
