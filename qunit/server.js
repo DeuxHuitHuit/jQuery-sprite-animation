@@ -10,4 +10,4 @@ var server = connect().use(
     connect.static(__dirname + folder)
 ).listen(port, '127.0.0.1');
 
-console.log("Test server started on port %s in %s", port, folder);
+console.log("Test server started on port %s in %s", port, __dirname + folder);
