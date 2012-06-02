@@ -8,6 +8,6 @@ var connect = require('connect'),
 
 var server = connect.createServer(
     connect.static(__dirname + folder)
-).listen(port);
+).listen(port, '127.0.0.1');
 
 console.log("Test server started on port %s in %s", port, folder);
