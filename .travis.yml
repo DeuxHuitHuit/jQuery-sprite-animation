@@ -1,6 +1,8 @@
 language: nodejs
 node_js:
   - 0.6
+notifications:
+  - email: false
 before_script:
   - "export DISPLAY=:99.0"
   - "sh -e /etc/init.d/xvfb start"
@@ -10,6 +12,6 @@ before_script:
 script:
   - curl http://localhost:8080/adhoc-test.html
   - /usr/local/bin/phantomjs ./qunit/runner.js 'http://localhost:8080/jquery.sprite-animation.js.test.html?jquery=1.7'
-  - /usr/local/bin/phantomjs ./qunit/runner.js http://localhost:8080/jquery.sprite-animation.js.test.html?notrycatch=true&noglobals=true&jquery=1.6
-  - /usr/local/bin/phantomjs ./qunit/runner.js http://localhost:8080/jquery.sprite-animation.js.test.html?notrycatch=true&noglobals=true&jquery=1.5
-  - /usr/local/bin/phantomjs ./qunit/runner.js http://localhost:8080/jquery.sprite-animation.js.test.html?notrycatch=true&noglobals=true&jquery=1.4
+  # /usr/local/bin/phantomjs ./qunit/runner.js http://localhost:8080/jquery.sprite-animation.js.test.html?notrycatch=true&noglobals=true&jquery=1.6
+  # /usr/local/bin/phantomjs ./qunit/runner.js http://localhost:8080/jquery.sprite-animation.js.test.html?notrycatch=true&noglobals=true&jquery=1.5
+  # /usr/local/bin/phantomjs ./qunit/runner.js http://localhost:8080/jquery.sprite-animation.js.test.html?notrycatch=true&noglobals=true&jquery=1.4

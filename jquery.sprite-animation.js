@@ -128,7 +128,7 @@
 	};
 	
 	function _nextFrame(elem, o) {
-		timer = setTimeout(function () {
+		timer = setTimeout(function timeout () {
 			_animate(elem, o);
 		}, _getSpeed(o));
 	};
@@ -155,16 +155,19 @@
 	
 	// actual plugin
 	$.fn.spriteAnimation = function (options) {
+		// check if we have a non empty jQuery object
 		if (!this.each || !this[0]) {
 			return this;
 		}
 		
+		// check if options passed is a stop command
 		if (options === 'stop') {
 			clearTimeout(timer);
 			timer = null;
 			return this;
 		}
 		
+		// create current options object
 		var o = $.extend({}, $.spriteAnimation.defaults, options),
 			t = $(this);
 		
@@ -180,9 +183,11 @@
 			}
 		});
 		
+		// assure with
 		if (o.width == 'auto') {
 			o.width = t.width();
 		}
+		// assure height
 		if (o.height == 'auto') {
 			o.height = t.height();
 		}
@@ -192,8 +197,8 @@
 		
 		// start animation
 		_nextFrame(t, o);
-		//});
 		
+		// return current scope
 		return this;
 	};
 	
