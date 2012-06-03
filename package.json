@@ -22,7 +22,8 @@
     }
   ],
   "dependencies": {
-    "jquery": "~1.4"
+    "jquery": "~1.4",
+	"grunt": "~0.3.9"
   },
   "keywords": []
 }
