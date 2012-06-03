@@ -5,7 +5,7 @@ notifications:
   email: false
 before_script:
   - node --version
-  - sudo npm install connect grunt
+  # sudo npm install grunt
   - "export DISPLAY=:99.0"
   - "sh -e /etc/init.d/xvfb start"
   # node .lint/linter.js
