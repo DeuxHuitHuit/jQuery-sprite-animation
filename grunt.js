@@ -30,16 +30,20 @@ module.exports = function(grunt) {
     jshint: {
       options: {
         curly: true,
-        eqeqeq: true,
-        immed: true,
-        latedef: true,
-        newcap: true,
+        eqeqeq: false, // allow ==
+        immed: false,
+        latedef: false,
+        newcap: false,
+        nonew: true,
         noarg: true,
         sub: true,
         undef: true,
         boss: true,
-        eqnull: true,
-        browser: true
+        eqnull: false,
+        browser: true,
+        regexp: true,
+        strict: true,
+        trailing: true
       },
       globals: {
         jQuery: true
