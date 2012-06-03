@@ -4,10 +4,11 @@ node_js:
 notifications:
   email: false
 before_script:
+  - node --version
+  - npm install connect linter
+  - node .lint/linter.js
   - "export DISPLAY=:99.0"
   - "sh -e /etc/init.d/xvfb start"
-  - node --version
-  - npm install connect
   - node ./qunit/server.js /../ 8080 &
   - sleep 3
 script:
