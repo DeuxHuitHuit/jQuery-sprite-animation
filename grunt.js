@@ -1,6 +1,8 @@
 /*global module:false*/
 module.exports = function(grunt) {
 
+  "use strict";
+	
   // Project configuration.
   grunt.initConfig({
 	pkg: '<json:package.json>',
@@ -31,19 +33,22 @@ module.exports = function(grunt) {
       options: {
         curly: true,
         eqeqeq: false, // allow ==
-        immed: false,
-        latedef: false,
-        newcap: false,
-        nonew: true,
-        noarg: true,
+        immed: false, //
+        latedef: false, // late definition
+        newcap: false, // capitalize ctos
+        nonew: true, // no new ..()
+        noarg: true, 
         sub: true,
         undef: true,
-        boss: true,
+        //boss: true,
         eqnull: false,
         browser: true,
         regexp: true,
         strict: true,
-        trailing: true
+        trailing: false,
+        smarttabs: true,
+        eqnull: true,
+        lastsemic: true
       },
       globals: {
         jQuery: true
