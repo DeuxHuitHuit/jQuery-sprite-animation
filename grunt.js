@@ -21,7 +21,7 @@ module.exports = function(grunt) {
       files: ['tests/*js.test.html']
     },
     lint: {
-      files: ['grunt.js', 'src/**/*.js', 'test/**/*.js']
+      files: ['grunt.js', 'jquery.*.js']
     },
     /*watch: {
       files: '<config:lint.files>',
@@ -47,7 +47,7 @@ module.exports = function(grunt) {
     },
     uglify: {},
     server: {
-        port: 8000,
+        port: 8080,
         base: '.'
       }
   });

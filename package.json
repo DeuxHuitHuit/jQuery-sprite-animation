@@ -1,5 +1,5 @@
 {
-  "name": "jquery.sprite-animation.js",
+  "name": "jquery.sprite-animation",
   "title": "jQuery Sprite Animation",
   "description": "jQuery plugin that quickly enables you to create 'gif' style animation with a png/jpeg sprite",
   "version": "1.0",

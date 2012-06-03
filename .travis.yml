@@ -13,6 +13,7 @@ before_script:
   # sleep 3
 script:
   - grunt
+  - cat .dist/
   - /usr/local/bin/phantomjs ./qunit/runner.js 'http://localhost:8080/tests/jquery.sprite-animation.js.test.html?noglobals=true'
   - /usr/local/bin/phantomjs ./qunit/runner.js 'http://localhost:8080/tests/jquery.sprite-animation.js.test.html?noglobals=true&jquery=1.7'
   - /usr/local/bin/phantomjs ./qunit/runner.js 'http://localhost:8080/tests/jquery.sprite-animation.js.test.html?noglobals=true&jquery=1.6'
