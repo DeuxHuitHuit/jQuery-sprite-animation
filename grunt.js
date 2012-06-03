@@ -45,10 +45,14 @@ module.exports = function(grunt) {
         jQuery: true
       }
     },
-    uglify: {}
+    uglify: {},
+    server: {
+        port: 8000,
+        base: '.'
+      }
   });
 
   // Default task.
-  grunt.registerTask('default', 'lint qunit min');
+  grunt.registerTask('default', 'lint server qunit min');
 
 };
