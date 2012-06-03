@@ -8,12 +8,10 @@ before_script:
   - sudo npm install -g grunt
   - "export DISPLAY=:99.0"
   - "sh -e /etc/init.d/xvfb start"
-  # node .lint/linter.js
-  # node ./qunit/server.js /../ 8080 &
-  # sleep 3
+  - sleep 5
 script:
   - grunt
-  - cat .dist/
+  - cat .dist/*
   - /usr/local/bin/phantomjs ./qunit/runner.js 'http://localhost:8080/tests/jquery.sprite-animation.js.test.html?noglobals=true'
   - /usr/local/bin/phantomjs ./qunit/runner.js 'http://localhost:8080/tests/jquery.sprite-animation.js.test.html?noglobals=true&jquery=1.7'
   - /usr/local/bin/phantomjs ./qunit/runner.js 'http://localhost:8080/tests/jquery.sprite-animation.js.test.html?noglobals=true&jquery=1.6'
