@@ -14,9 +14,8 @@ module.exports = function(grunt) {
         ' Licensed <%= _.pluck(pkg.licenses, "type").join(", ") %> */'
     },
     min: {
-      files: ['jquery.*.js'],
       dist: {
-        src: ['<banner:meta.banner>'],
+        src: ['<banner:meta.banner>', 'jquery.*.js'],
         dest: 'dist/<%= pkg.name %>.min.js'
       }
     },
