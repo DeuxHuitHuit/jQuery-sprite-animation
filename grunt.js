@@ -14,13 +14,19 @@ module.exports = function(grunt) {
         ' Licensed <%= _.pluck(pkg.licenses, "type").join(", ") %> */'
     },
     min: {
+      files: ['jquery.*.js'],
       dist: {
         src: ['<banner:meta.banner>'],
         dest: 'dist/<%= pkg.name %>.min.js'
       }
     },
     qunit: {
-      files: ['tests/*js.test.html']
+      files: ['http://localhost:8080/tests/jquery.sprite-animation.js.test.html?noglobals=true',
+			'http://localhost:8080/tests/jquery.sprite-animation.js.test.html?noglobals=true&jquery=1.7',
+			'http://localhost:8080/tests/jquery.sprite-animation.js.test.html?noglobals=true&jquery=1.6',
+			'http://localhost:8080/tests/jquery.sprite-animation.js.test.html?noglobals=true&jquery=1.5',
+			'http://localhost:8080/tests/jquery.sprite-animation.js.test.html?noglobals=true&jquery=1.4',
+			'http://localhost:8080/tests/jquery.sprite-animation.js.test.html?noglobals=true&jquery=1.3']
     },
     lint: {
       files: ['grunt.js', 'jquery.*.js']
@@ -61,6 +67,6 @@ module.exports = function(grunt) {
   });
 
   // Default task.
-  grunt.registerTask('default', 'lint server min');
+  grunt.registerTask('default', 'lint server qunit min');
 
 };

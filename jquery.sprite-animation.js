@@ -1,10 +1,9 @@
 /*
-* 	Sprite Animation v1.0 - jQuery plugin
+*	Sprite Animation v1.0 - jQuery plugin
 *
 *	Copyright (c) 2012 Deux Huit Huit (http://www.nitriques.com/open-source/)
 *	Licensed under the MIT (https://raw.github.com/DeuxHuitHuit/jQuery-sprite-animation/master/LICENSE.txt)
 */
-
 
 (function ($, undefined) {
 	
@@ -14,34 +13,30 @@
 	$.extend({
 		spriteAnimation: {
 			defaults : {
-				cols: 1, 		// number of column in the sprite
-				rows: 3, 		// number of rows in the sprite
-				speed: 100,		// number of ms between each frame
+				cols: 1,        // number of column in the sprite
+				rows: 3,        // number of rows in the sprite
+				speed: 100,     // number of ms between each frame
 				// can also be a function that returns number of ms between each frame
 				// speed: function (col, row, total) {	
 				//	return 10 * col;
 				// },
-				iterations: 0, 	// number of iteration (0 for infinite)
-				delay: 0,		// number of ms added at the end of each iteration
-				width: 'auto', 	// auto | number of pixel per step
-				height: 'auto',	// auto | number of pixel per step
-				startCol: 0,	// start col offset
-				startRow: 0,	// start row offset
+				iterations: 0,  // number of iteration (0 for infinite)
+				delay: 0,       // number of ms added at the end of each iteration
+				width: 'auto',  // auto | number of pixel per step
+				height: 'auto', // auto | number of pixel per step
+				startCol: 0,    // start col offset
+				startRow: 0,    // start row offset
 				dataKey: 'sprite-animation',
 				count: function () { return this.cols * this.rows; }
-			},
-			_private: {
-				_createBackgroundPosition: _createBackgroundPosition,
-				_preAnimate: _preAnimate,
-				_transition: _transition,
-				_getSpeed: _getSpeed,
-				_isNumeric: _isNumeric
 			}
 		}
 	});
 	
+	// variables definitions
+	var
+	
 	// patching older version of jquery
-	function _isNumeric(val) {
+	_isNumeric = function (val) {
 		var isNum = false;
 		if ($.isFunction($.isNumeric)) {
 			isNum = $.isNumeric(val);
@@ -52,14 +47,14 @@
 		}
 		
 		return isNum;
-	};
+	},
 	
 	// private methods
-	function _createBackgroundPosition(x, y) {
+	_createBackgroundPosition = function (x, y) {
 		return x + 'px ' + y + 'px';
-	};
+	},
 	
-	function _preAnimate(o) {
+	_preAnimate = function (o) {
 		// increment index, always
 		o.current.index ++;
 		
@@ -87,8 +82,8 @@
 			o.current.delay = o.delay;
 			
 			// detect iteration overflow
-			shouldAdvance = o.iterations == 0 ||  // unlimited
-						   (o.iterations != 0 && o.current.iteration < o.iterations); // limited
+			shouldAdvance = o.iterations === 0 || // unlimited
+							(o.iterations !== 0 && o.current.iteration < o.iterations); // limited
 		} 
 		
 		// detect col overflow
@@ -103,9 +98,9 @@
 		}
 		
 		return shouldAdvance;
-	};
+	},
 	
-	function _getSpeed(o) {
+	_getSpeed = function (o) {
 		// get default value
 		var speed = $.spriteAnimation.defaults.speed;
 		
@@ -125,19 +120,19 @@
 		speed += o.current.delay;
 		
 		return speed;
-	};
+	},
 	
-	function _nextFrame(elem, o) {
+	_nextFrame = function (elem, o) {
 		timer = setTimeout(function timeout () {
 			_animate(elem, o);
 		}, _getSpeed(o));
-	};
+	},
 	
-	function _transition(elem, o) {
+	_transition = function (elem, o) {
 		elem.css({'background-position': _createBackgroundPosition(-o.current.col * o.width, -o.current.row * o.height) });
-	};
+	},
 	
-	function _animate(elem, o) {
+	_animate = function (elem, o) {
 		
 		// calculate our new values
 		var shouldAdvance = _preAnimate(o);
@@ -149,9 +144,10 @@
 		if (shouldAdvance) {
 			_nextFrame(elem, o);
 		}
-	};
+	},
 	
-	var timer = null;
+	// global timer
+	timer = null;
 	
 	// actual plugin
 	$.fn.spriteAnimation = function (options) {
@@ -201,5 +197,13 @@
 		// return current scope
 		return this;
 	};
-	
+
+	$.extend($.spriteAnimation, { _private: {
+		_createBackgroundPosition: _createBackgroundPosition,
+		_preAnimate: _preAnimate,
+		_transition: _transition,
+		_getSpeed: _getSpeed,
+		_isNumeric: _isNumeric
+	}});
+
 })(jQuery);
