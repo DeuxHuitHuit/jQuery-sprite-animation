@@ -49,9 +49,9 @@ module.exports = function(grunt) {
         eqnull: true, // relax
         browser: true,
         regexp: true,
-        //strict: true,
+        strict: true,
         trailing: false,
-        //smarttabs: true,
+        smarttabs: true,
         lastsemic: true
       },
       globals: {
