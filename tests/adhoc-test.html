@@ -23,7 +23,13 @@
     </header>
     
     <div>
+      <h4>Infinite</h4>
       <div id="animation"></div>
+      <p>
+      	<a id="animation-stop" href="#">Stop</a>
+      </p>
+      
+      <h4>One time only</h4>
       <div id="animation2"></div>
     </div>
 
@@ -36,7 +42,21 @@
 	<script>
 	(function ($) {
 		
-		$(function () {
+		"use strict";
+		
+		var 
+		
+		stop = function () {
+			
+		},
+		
+		stopClick = function (e) {
+			
+			e.preventDefault();
+			return false;
+		},
+		
+		init = function () {
 			$('#animation').spriteAnimation({
 				rows:10,
 				speed:80,
@@ -49,7 +69,11 @@
 				delay:10,
 				iterations:1
 			});
-		});
+			
+			$('#animation-stop').click(stopClick);
+		};
+		
+		$(init);
 		
 	})(jQuery);
 	</script>
