@@ -8,8 +8,7 @@
   <title>adhoc-test</title>
   
   <style type="text/css">
-  		#animation,
-  		#animation2 {
+  		.animation {
   			width: 56px;
   			height: 56px;
   			background: transparent url(img/spot-normal.png) no-repeat 0px 0px;
@@ -19,18 +18,22 @@
 <body>
   <div>
     <header>
-      <h1>adhoc-test</h1>
+      <h1>jQuery Sprite Animation Adhoc Test</h1>
     </header>
     
     <div>
       <h4>Infinite</h4>
-      <div id="animation"></div>
+      <div id="animation" class="animation"></div>
       <p>
       	<a id="animation-stop" href="#">Stop</a>
+      	<a id="animation-start" href="#">Start</a>
       </p>
       
       <h4>One time only</h4>
-      <div id="animation2"></div>
+      <div id="animation2" class="animation"></div>
+      
+      <h4>Ten times</h4>
+      <div id="animation10" class="animation"></div>
     </div>
 
     <footer>
@@ -46,22 +49,30 @@
 		
 		var 
 		
-		stop = function () {
-			
+		_animation = function (param) {
+			$('#animation').spriteAnimation(param || {
+				rows:10,
+				speed:80,
+				delay:500
+			});
+		},
+		
+		startClick = function (e) {
+			_animation();
+			e.preventDefault();
+			return false;
 		},
 		
 		stopClick = function (e) {
-			
+			_animation('stop');
 			e.preventDefault();
 			return false;
 		},
 		
 		init = function () {
-			$('#animation').spriteAnimation({
-				rows:10,
-				speed:80,
-				delay:500
-			});
+			_animation();
+			$('#animation-stop').click(stopClick);
+			$('#animation-start').click(startClick);
 			
 			$('#animation2').spriteAnimation({
 				rows:10,
@@ -70,7 +81,13 @@
 				iterations:1
 			});
 			
-			$('#animation-stop').click(stopClick);
+			$('#animation10').spriteAnimation({
+				rows:10,
+				speed:150,
+				delay:0,
+				iterations:10
+			});
+
 		};
 		
 		$(init);
