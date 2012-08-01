@@ -28,7 +28,7 @@ module.exports = function(grunt) {
 			'http://localhost:8080/tests/jquery.sprite-animation.js.test.html?noglobals=true&jquery=1.3']
     },
     lint: {
-      files: ['grunt.js', 'jquery.*.js']
+      files: ['grunt.js', 'src/jquery.*.js']
     },
     /*watch: {
       files: '<config:lint.files>',
