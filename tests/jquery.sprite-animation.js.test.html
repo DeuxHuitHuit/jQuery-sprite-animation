@@ -124,7 +124,7 @@
 				equal(o.current.iteration, 1, 'iteration is now 1');
 				equal(o.current.delay, 1, 'current delay is now 1');
 				
-				ok(_private._preAnimate(o), 'fifth step');
+				ok(!_private._preAnimate(o), 'fifth step');
 				equal(o.current.index, 1, 'current index = 1');
 				equal(o.current.iteration, 1, 'iteration is still 1');
 				equal(o.current.delay, 0, 'current delay = 0');
