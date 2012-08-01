@@ -20,7 +20,7 @@
 				// speed: function (col, row, total) {	
 				//	return 10 * col;
 				// },
-				iterations: 0,  // number of iteration (0 for infinite)
+				iterations: 0,  // number of maximum iterations (0 for infinite)
 				delay: 0,       // number of ms added at the end of each iteration
 				width: 'auto',  // auto | number of pixel per step
 				height: 'auto', // auto | number of pixel per step
@@ -35,7 +35,12 @@
 	// variables definitions
 	var
 	
-	// patching older version of jquery
+	/**
+	 * Patching older version of jQuery
+	 * 
+	 * @param val - the variable to evaluate against
+	 * @returns boolean
+	 */ 
 	_isNumeric = function (val) {
 		var isNum = false;
 		if ($.isFunction($.isNumeric)) {
@@ -49,11 +54,24 @@
 		return isNum;
 	},
 	
-	// private methods
+	/**
+	 * Utility method that concats the x and y values
+	 * 
+	 * @param x
+	 * @param y
+	 * @returns "Xpx Ypx"
+	 */
 	_createBackgroundPosition = function (x, y) {
 		return x + 'px ' + y + 'px';
 	},
 	
+	/**
+	 * Check if the animation should continue to next frame.
+	 * Returns true if it does, based on the given options.
+	 * 
+	 * @param o - options
+	 * @returns boolean
+	 */
 	_preAnimate = function (o) {
 		// increment index, always
 		o.current.index ++;
@@ -83,7 +101,7 @@
 			
 			// detect iteration overflow
 			shouldAdvance = o.iterations === 0 || // unlimited
-							(o.iterations !== 0 && o.current.iteration < o.iterations); // limited
+							(o.iterations !== 0 && o.current.iteration - 1 < o.iterations); // limited
 		} 
 		
 		// detect col overflow
@@ -100,6 +118,15 @@
 		return shouldAdvance;
 	},
 	
+	/**
+	 * Utility function that computes the value of the
+	 * timeout duration. It checks in the options speed
+	 * is a value or function. If it's neither, the default
+	 * is used 
+	 * 
+	 * @param o - options
+	 * @returns number - in ms
+	 */
 	_getSpeed = function (o) {
 		// get default value
 		var speed = $.spriteAnimation.defaults.speed;
@@ -122,16 +149,42 @@
 		return speed;
 	},
 	
+	/**
+	 * Utility function for the timer (next frame)
+	 * 
+	 * @param elem - the target jQuery object
+	 * @param o - options
+	 * @returns null
+	 */
 	_nextFrame = function (elem, o) {
-		timer = setTimeout(function timeout () {
+		var 
+		data = elem.data(),
+		timeout = function  () {
 			_animate(elem, o);
-		}, _getSpeed(o));
+		};
+		
+		data[o.dataKey] = setTimeout(timeout, _getSpeed(o));
 	},
 	
+	/**
+	 * Utility function that apply a background position based
+	 * on the values in the current object in the option parameter
+	 * 
+	 * @param elem - the target jQuery object
+	 * @param o - options
+	 * @returns null
+	 */
 	_transition = function (elem, o) {
 		elem.css({'background-position': _createBackgroundPosition(-o.current.col * o.width, -o.current.row * o.height) });
 	},
 	
+	/**
+	 * Actual animation frame. Will be called by the timer.
+	 * 
+	 * @param elem - the target jQuery object
+	 * @param o - options
+	 * @returns null
+	 */
 	_animate = function (elem, o) {
 		
 		// calculate our new values
@@ -144,10 +197,9 @@
 		if (shouldAdvance) {
 			_nextFrame(elem, o);
 		}
-	},
-	
-	// global timer
-	timer = null;
+		
+	};
+	// end var block
 	
 	// actual plugin
 	$.fn.spriteAnimation = function (options) {
@@ -156,16 +208,18 @@
 			return this;
 		}
 		
+		// create current options object
+		var o = $.extend({}, $.spriteAnimation.defaults, options),
+			t = $(this),
+			data = t.data(),
+			timer = data[o.dataKey];
+		
 		// check if options passed is a stop command
 		if (options === 'stop') {
 			clearTimeout(timer);
 			timer = null;
 			return this;
 		}
-		
-		// create current options object
-		var o = $.extend({}, $.spriteAnimation.defaults, options),
-			t = $(this);
 		
 		// extend o with the current object
 		o = $.extend(true, o, {

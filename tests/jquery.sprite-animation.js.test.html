@@ -116,15 +116,17 @@
 				
 				ok(_private._preAnimate(o), 'third step');
 				equal(o.current.index, 3, 'current index = 3');
+				equal(o.current.iteration, 0, 'iteration is still 0');
 				equal(o.current.delay, 0, 'current delay = 0');
 				
-				ok(!_private._preAnimate(o), 'fourth step');
+				ok(_private._preAnimate(o), 'fourth step');
 				equal(o.current.index, 0, 'current index = 0');
 				equal(o.current.iteration, 1, 'iteration is now 1');
 				equal(o.current.delay, 1, 'current delay is now 1');
 				
 				ok(_private._preAnimate(o), 'fifth step');
 				equal(o.current.index, 1, 'current index = 1');
+				equal(o.current.iteration, 1, 'iteration is still 1');
 				equal(o.current.delay, 0, 'current delay = 0');
 			});
 			

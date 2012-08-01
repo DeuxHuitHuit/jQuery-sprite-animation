@@ -8,7 +8,8 @@
   <title>adhoc-test</title>
   
   <style type="text/css">
-  		#animation {
+  		#animation,
+  		#animation2 {
   			width: 56px;
   			height: 56px;
   			background: transparent url(img/spot-normal.png) no-repeat 0px 0px;
@@ -22,16 +23,15 @@
     </header>
     
     <div>
-      <div id="animation">
-      	
-      </div>
+      <div id="animation"></div>
+      <div id="animation2"></div>
     </div>
 
     <footer>
      <p>&copy; Copyright Deux Huit Huit</p>
     </footer>
     
-    <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js"></script>
+    <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.7/jquery.min.js"></script>
 	<script src="../src/jquery.sprite-animation.js"></script> 
 	<script>
 	(function ($) {
@@ -41,6 +41,13 @@
 				rows:10,
 				speed:80,
 				delay:500
+			});
+			
+			$('#animation2').spriteAnimation({
+				rows:10,
+				speed:100,
+				delay:10,
+				iterations:1
 			});
 		});
 		
