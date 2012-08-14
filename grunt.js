@@ -15,12 +15,13 @@ module.exports = function(grunt) {
     },
     min: {
       dist: {
-        src: ['<banner:meta.banner>', 'jquery.*.js'],
+        src: ['<banner:meta.banner>', 'src/jquery.*.js'],
         dest: 'dist/<%= pkg.name %>.min.js'
       }
     },
     qunit: {
       files: ['http://localhost:8080/tests/jquery.sprite-animation.js.test.html?noglobals=true',
+			'http://localhost:8080/tests/jquery.sprite-animation.js.test.html?noglobals=true&jquery=1.8',
 			'http://localhost:8080/tests/jquery.sprite-animation.js.test.html?noglobals=true&jquery=1.7',
 			'http://localhost:8080/tests/jquery.sprite-animation.js.test.html?noglobals=true&jquery=1.6',
 			'http://localhost:8080/tests/jquery.sprite-animation.js.test.html?noglobals=true&jquery=1.5',
