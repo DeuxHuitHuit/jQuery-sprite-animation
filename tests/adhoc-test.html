@@ -25,8 +25,9 @@
       <h4>Infinite</h4>
       <div id="animation" class="animation"></div>
       <p>
-      	<a id="animation-stop" href="#">Stop</a>
-      	<a id="animation-start" href="#">Start</a>
+		<a id="animation-stop" href="#">Stop</a>
+		<a id="animation-start" href="#">Start</a>
+		<a id="animation-reset" href="#">Reset</a>
       </p>
       
       <h4>One time only</h4>
@@ -69,10 +70,17 @@
 			return false;
 		},
 		
+		resetClick = function (e) {
+			_animation();
+			e.preventDefault();
+			return false;
+		},
+		
 		init = function () {
 			_animation();
 			$('#animation-stop').click(stopClick);
 			$('#animation-start').click(startClick);
+			$('#animation-reset').click(resetClick);
 			
 			$('#animation2').spriteAnimation({
 				rows:10,
@@ -81,12 +89,12 @@
 				iterations:1
 			});
 			
-			/*$('#animation10').spriteAnimation({
+			$('#animation10').spriteAnimation({
 				rows:10,
 				speed:150,
 				delay:0,
 				iterations:10
-			});*/
+			});
 
 		};
 		

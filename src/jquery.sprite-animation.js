@@ -240,6 +240,10 @@
 			}
 		});
 		
+		// clear any running timer
+		clearTimeout(timer);
+		timer = data[o.dataKey] = null;
+		
 		// assure with
 		if (o.width == 'auto') {
 			o.width = t.width();

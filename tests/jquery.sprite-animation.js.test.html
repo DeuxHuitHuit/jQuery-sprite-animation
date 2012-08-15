@@ -120,7 +120,8 @@
 				equal(o.current.iteration, 0, 'iteration is still 0');
 				equal(o.current.delay, 0, 'current delay = 0');
 				
-				ok(_private._preAnimate(o), 'fourth step');
+				// This won't pass since we locked it a 1 iteration
+				ok(!_private._preAnimate(o), 'fourth step');
 				equal(o.current.index, 0, 'current index = 0');
 				equal(o.current.iteration, 1, 'iteration is now 1');
 				equal(o.current.delay, 1, 'current delay is now 1');
