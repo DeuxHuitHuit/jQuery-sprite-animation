@@ -17,8 +17,8 @@
 				rows: 3,        // number of rows in the sprite
 				speed: 100,     // number of ms between each frame
 				// can also be a function that returns number of ms between each frame
-				// speed: function (col, row, total) {	
-				//	return 10 * col;
+				// speed: function (col, row, total) {
+				//   return 10 * col;
 				// },
 				iterations: 0,  // number of maximum iterations (0 for infinite)
 				delay: 0,       // number of ms added at the end of each iteration
@@ -101,7 +101,7 @@
 			
 			// detect iteration overflow
 			shouldAdvance = o.iterations === 0 || // unlimited
-							(o.iterations !== 0 && o.current.iteration - 1 < o.iterations); // limited
+							(o.iterations !== 0 && o.current.iteration < o.iterations); // limited
 		} 
 		
 		// detect col overflow
@@ -217,7 +217,14 @@
 		// check if options passed is a stop command
 		if (options === 'stop') {
 			clearTimeout(timer);
-			timer = null;
+			timer = data[o.dataKey] = null;
+			return this;
+		// or a start command
+		} else if (options === 'start') {
+			o = data[o.dataKey + '-options'];
+			if (!timer && !!o) {
+				_nextFrame(t, o);
+			}
 			return this;
 		}
 		
@@ -225,10 +232,10 @@
 		o = $.extend(true, o, {
 			// extend the current object in it
 			current : {
-				row: options.startRow,
-				col: options.startCol,
+				row: o.startRow || 0,
+				col: o.startCol || 0,
 				iteration: 0,
-				index: (o.startRow * o.cols) + o.startCol,
+				index: ((o.startRow * o.cols) + o.startCol) || 0,
 				delay: 0
 			}
 		});
@@ -241,6 +248,9 @@
 		if (o.height == 'auto') {
 			o.height = t.height();
 		}
+		
+		// Save options
+		data[o.dataKey + '-options'] = o;
 		
 		// set initial values
 		_transition(t, o);
