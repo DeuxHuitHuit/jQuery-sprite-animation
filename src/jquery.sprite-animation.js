@@ -164,6 +164,26 @@
 		return speed;
 	},
 	
+	_setTimeout = function (fx, delay) {
+		var w = window,
+			frm = w.requestAnimationFrame || w.mozRequestAnimationFrame ||  
+				w.webkitRequestAnimationFrame || w.msRequestAnimationFrame ||
+				w.oRequestAnimationFrame || w.setTimeout;
+
+		return frm(fx, delay);
+	},
+
+	_clearTimeout = function (timeout) {
+		var w = window,
+			frm = w.cancelAnimationFrame || w.webkitCancelRequestAnimationFrame ||
+				w.mozCancelRequestAnimationFrame || w.oCancelRequestAnimationFrame ||
+				w.msCancelRequestAnimationFrame  || w.clearTimeout;
+
+		return frm(timeout);
+	},
+	
+	lastFrameTimestamp = _now(),
+	
 	/**
 	 * Utility function for the timer (next frame)
 	 * 
@@ -178,7 +198,7 @@
 			_animate(elem, o);
 		};
 		
-		data[o.dataKey] = setTimeout(timeout, _getSpeed(o));
+		data[o.dataKey] = _setTimeout(timeout, _getSpeed(o));
 	},
 	
 	/**
@@ -247,7 +267,7 @@
 		
 		// check if options passed is a stop command
 		if (options === 'stop') {
-			clearTimeout(timer);
+			_clearTimeout(timer);
 			timer = data[o.dataKey] = null;
 			return this;
 		// or a start command
@@ -272,7 +292,7 @@
 		});
 		
 		// clear any running timer
-		clearTimeout(timer);
+		_clearTimeout(timer);
 		timer = data[o.dataKey] = null;
 		
 		// assure with
