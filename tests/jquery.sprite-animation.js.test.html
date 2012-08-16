@@ -107,21 +107,23 @@
 				equal(o.current.index, 0, 'current index = 0');
 				equal(o.current.delay, 0, 'current delay = 0');
 				
-				ok(_private._preAnimate(o), 'first step');
+				ok(_private._preAnimate(o).shouldAdvance, 'first step');
 				equal(o.current.index, 1, 'current index = 1');
 				equal(o.current.delay, 0, 'current delay = 0');
 				
-				ok(_private._preAnimate(o), 'second step');
+				ok(_private._preAnimate(o).shouldAdvance, 'second step');
 				equal(o.current.index, 2, 'current index = 2');
 				equal(o.current.delay, 0, 'current delay = 0');
 				
-				ok(_private._preAnimate(o), 'third step');
+				ok(_private._preAnimate(o).shouldAdvance, 'third step');
 				equal(o.current.index, 3, 'current index = 3');
 				equal(o.current.iteration, 0, 'iteration is still 0');
 				equal(o.current.delay, 0, 'current delay = 0');
 				
 				// This won't pass since we locked it a 1 iteration
-				ok(!_private._preAnimate(o), 'fourth step');
+				var paRes = _private._preAnimate(o);
+				ok(!paRes.shouldAdvance, 'fourth step, will get stops');
+				ok(paRes.iterationEnd, 'fourth step, end of iteration');
 				equal(o.current.index, 0, 'current index = 0');
 				equal(o.current.iteration, 1, 'iteration is now 1');
 				equal(o.current.delay, 1, 'current delay is now 1');

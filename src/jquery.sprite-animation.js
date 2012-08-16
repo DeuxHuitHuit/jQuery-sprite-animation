@@ -27,7 +27,10 @@
 				startCol: 0,    // start col offset
 				startRow: 0,    // start row offset
 				dataKey: 'sprite-animation',
-				count: function () { return this.cols * this.rows; }
+				count: function () { return this.cols * this.rows; },
+				frameComplete: null, // callback on each frame
+				iterationComplete: null, // callback at the end of each iteration
+				animationComplete: null // callback at the end of the animation (after all iterations)
 			}
 		}
 	});
@@ -63,6 +66,15 @@
 	 */
 	_createBackgroundPosition = function (x, y) {
 		return x + 'px ' + y + 'px';
+	},
+	
+	/**
+	 * Utility method for getting the current timestamp
+	 * 
+	 * @returns integer (in ms since January 1st, 1970)
+	 */
+	_now = function () {
+		return (new Date()).getTime();
 	},
 	
 	/**
@@ -115,7 +127,10 @@
 			o.current.col++;
 		}
 		
-		return shouldAdvance;
+		return {
+			shouldAdvance: shouldAdvance,
+			iterationEnd: endOverflow
+		};
 	},
 	
 	/**
@@ -194,8 +209,24 @@
 		_transition(elem, o);
 		
 		// next step
-		if (shouldAdvance) {
+		if (shouldAdvance.shouldAdvance) {
+			// frame callback
+			if ($.isFunction(o.frameComplete)) {
+				o.frameComplete.call(elem, o);
+			}
+			
+			// iteration callback
+			if (shouldAdvance.iterationEnd && $.isFunction(o.iterationComplete)) {
+				o.iterationComplete.call(elem, o);
+			}
+				
 			_nextFrame(elem, o);
+			
+		} else {
+			// animation ended callabck
+			if ($.isFunction(o.animationComplete)) {
+				o.animationComplete.call(elem, o);
+			}
 		}
 		
 	};
