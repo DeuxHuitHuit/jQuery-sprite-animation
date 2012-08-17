@@ -206,17 +206,21 @@
 		var 
 		data = elem.data(),
 		delay = _getSpeed(o),
-		timeout = function (timestamp) {
-			var n = timestamp || _now();
-			if (n - data[o.dataKey+'timestamp'] >= delay) {
+		// use FF timestamp or now
+		start = w.mozAnimationStartTime || _now(),
+		frame = function (timestamp) {
+			var n = timestamp || _now(), // take UA timestamp, if available
+				diff = n - data[o.dataKey+'timestamp'];
+				
+			if (diff >= delay) {
 				data[o.dataKey+'timestamp'] = n;
 				_animate(elem, o);
 			} else {
-				data[o.dataKey] = _setTimeout(timeout, elem, delay);
+				data[o.dataKey] = _setTimeout(frame, elem, delay);
 			}
 		};
-		
-		timeout(window.mozAnimationStartTime || _now());
+		// start polling now
+		frame(start);
 	},
 	
 	/**
