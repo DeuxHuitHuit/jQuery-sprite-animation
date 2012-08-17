@@ -210,11 +210,17 @@
 		start = w.mozAnimationStartTime || _now(),
 		frame = function (timestamp) {
 			var n = timestamp || _now(), // take UA timestamp, if available
-				diff = n - data[o.dataKey+'timestamp'];
+				diff = n - data[o.dataKey+'timestamp'],
+				ratio = Math.floor(diff/delay),
+				i;
 				
-			if (diff >= delay) {
+			if (!delay || ratio >= 1) {
 				data[o.dataKey+'timestamp'] = n;
-				_animate(elem, o);
+				// this loops assure sync animations
+				// when the fps can't be acheived
+				for (i = 0; i < (ratio || 1); i++) {
+					_animate(elem, o, i === ratio-1);
+				}
 			} else {
 				data[o.dataKey] = _setTimeout(frame, elem, delay);
 			}
@@ -240,9 +246,10 @@
 	 * 
 	 * @param elem - the target jQuery object
 	 * @param o - options
+	 * @param scheduleTimer - tells the method to call _nextFrame
 	 * @returns null
 	 */
-	_animate = function (elem, o) {
+	_animate = function (elem, o, scheduleTimer) {
 		
 		// calculate our new values
 		var shouldAdvance = _preAnimate(o);
@@ -261,8 +268,11 @@
 			if (shouldAdvance.iterationEnd && $.isFunction(o.iterationComplete)) {
 				o.iterationComplete.call(elem, o);
 			}
-				
-			_nextFrame(elem, o);
+			
+			// if we need to schedule for repaint
+			if (scheduleTimer) {
+				_nextFrame(elem, o);
+			}
 			
 		} else {
 			// animation ended callabck
