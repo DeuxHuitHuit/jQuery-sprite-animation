@@ -60,11 +60,12 @@
 			module('jQuery.sprite-animation.defaults');
 			
 			test('defaults', function () {
-				equal($.spriteAnimation.defaults.cols, 1, '1 cols by default');
-				equal($.spriteAnimation.defaults.rows, 3, '3 rows by default');
-				equal($.spriteAnimation.defaults.speed,100, '100ms by default');
+				equal($.spriteAnimation.defaults.cols,    1, '1 cols by default');
+				equal($.spriteAnimation.defaults.rows,    3, '3 rows by default');
+				equal($.spriteAnimation.defaults.speed,   100, '100ms speed by default');
+				equal($.spriteAnimation.defaults.fps,     null, 'null fps by default');
 				equal($.spriteAnimation.defaults.count(), 3, '3 items by default');
-				equal($.spriteAnimation.defaults.iterations, 0, '0 iterations by default');
+				equal($.spriteAnimation.defaults.iterations, 0, '0 iterations (unlimited) by default');
 			});
 			
 			module('jQuery.fn.sprite-animation');
@@ -169,7 +170,14 @@
 				
 				o.speed = 'show';
 				o.current.delay = 0;
-				equal(_private._getSpeed(o), $.spriteAnimation.defaults.speed, 'show = default');
+				equal(_private._getSpeed(o), 0, 'show = 0, most fast possible');
+				
+				o.speed = 1000;
+				o.fps = 10;
+				equal(_private._getSpeed(o), 100, '10 fps = 100ms');
+				
+				o.fps = 30;
+				equal(_private._getSpeed(o), 33, '30 fps = 33ms');
 			});
 			
 			test('_transition', function () {

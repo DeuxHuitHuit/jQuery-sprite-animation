@@ -83,39 +83,41 @@
 		},
 		
 		init = function () {
-			_animation();
+			//$(window).load(function () {
+				_animation();
+				
+				$('#animation2').spriteAnimation({
+					rows:10,
+					speed:1000,
+					delay:10,
+					iterations:1,
+					iterationComplete: function (options) {
+						console.error('[#animation2] should never get called');
+					},
+					animationComplete: function (options) {
+						console.log('[#animation2] animation ended');
+					},
+					frameComplete: function (options) {
+						console.log('[#animation2] frame ' + options.current.index);
+					}
+				});
+				
+				$('#animation10').spriteAnimation({
+					rows:10,
+					fps:60,
+					delay:0,
+					iterations:10,
+					iterationComplete: function (options) {
+						console.log('[#animation3] iteration ' + (options.current.iteration-1) + ' ended');
+					},
+					animationComplete: function (options) {
+						console.log('[#animation3] animation ended');
+					}
+				});
+			//});
 			$('#animation-stop').click(stopClick);
 			$('#animation-start').click(startClick);
 			$('#animation-reset').click(resetClick);
-			
-			$('#animation2').spriteAnimation({
-				rows:10,
-				speed:100,
-				delay:10,
-				iterations:1,
-				iterationComplete: function (options) {
-					console.error('[#animation2] should never get called');
-				},
-				animationComplete: function (options) {
-					console.log('[#animation2] animation ended');
-				},
-				frameComplete: function (options) {
-					console.log('[#animation2] frame ' + options.current.index);
-				}
-			});
-			
-			$('#animation10').spriteAnimation({
-				rows:10,
-				speed:150,
-				delay:0,
-				iterations:10,
-				iterationComplete: function (options) {
-					console.log('[#animation3] iteration ' + (options.current.iteration-1) + ' ended');
-				},
-				animationComplete: function (options) {
-					console.log('[#animation3] animation ended');
-				}
-			});
 
 		};
 		

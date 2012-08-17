@@ -16,6 +16,7 @@
 				cols: 1,        // number of column in the sprite
 				rows: 3,        // number of rows in the sprite
 				speed: 100,     // number of ms between each frame
+				fps: null,		// speed can also be set on a frame per second basis
 				// can also be a function that returns number of ms between each frame
 				// speed: function (col, row, total) {
 				//   return 10 * col;
@@ -37,6 +38,19 @@
 	
 	// variables definitions
 	var
+	
+	w = window,
+	
+	reqAnFrm = w.requestAnimationFrame || w.mozRequestAnimationFrame ||  
+				w.webkitRequestAnimationFrame || w.msRequestAnimationFrame ||
+				w.oRequestAnimationFrame,
+				
+	cancelReqAnFrm = w.cancelAnimationFrame || 
+				w.webkitCancelRequestAnimationFrame || w.webkitCancelAnimationFrame ||
+				w.mozCancelRequestAnimationFrame || w.oCancelRequestAnimationFrame ||
+				w.msCancelRequestAnimationFrame,
+				
+	useReqAnFrm = !!reqAnFrm && !!cancelReqAnFrm,
 	
 	/**
 	 * Patching older version of jQuery
@@ -143,12 +157,17 @@
 	 * @returns number - in ms
 	 */
 	_getSpeed = function (o) {
-		// get default value
-		var speed = $.spriteAnimation.defaults.speed;
+		var speed;
 		
-		// evaluate
-		if (_isNumeric(o.speed)) {
+		// evaluate fps
+		if (_isNumeric(o.fps) && o.fps > 0) {
+			speed = parseInt(1000 / o.fps, 10);
+		
+		// check if speed is numeric
+		} else if (_isNumeric(o.speed)) {
 			speed = o.speed;
+			
+		// check if speed is a function
 		} else if ($.isFunction(o.speed)) {
 			speed = o.speed(o.current.col, o.current.row, o.count());
 		}
@@ -164,25 +183,17 @@
 		return speed;
 	},
 	
-	_setTimeout = function (fx, delay) {
-		var w = window,
-			frm = w.requestAnimationFrame || w.mozRequestAnimationFrame ||  
-				w.webkitRequestAnimationFrame || w.msRequestAnimationFrame ||
-				w.oRequestAnimationFrame || w.setTimeout;
+	_setTimeout = function (fx, elem, delay) {
+		var frm = reqAnFrm || w.setTimeout;
 
-		return frm(fx, delay);
+		return frm(fx, useReqAnFrm ? elem : delay);
 	},
 
 	_clearTimeout = function (timeout) {
-		var w = window,
-			frm = w.cancelAnimationFrame || w.webkitCancelRequestAnimationFrame ||
-				w.mozCancelRequestAnimationFrame || w.oCancelRequestAnimationFrame ||
-				w.msCancelRequestAnimationFrame  || w.clearTimeout;
+		var frm = cancelReqAnFrm || w.clearTimeout;
 
 		return frm(timeout);
 	},
-	
-	lastFrameTimestamp = _now(),
 	
 	/**
 	 * Utility function for the timer (next frame)
@@ -194,11 +205,18 @@
 	_nextFrame = function (elem, o) {
 		var 
 		data = elem.data(),
-		timeout = function  () {
-			_animate(elem, o);
+		delay = _getSpeed(o),
+		timeout = function (timestamp) {
+			var n = timestamp || _now();
+			if (n - data[o.dataKey+'timestamp'] >= delay) {
+				data[o.dataKey+'timestamp'] = n;
+				_animate(elem, o);
+			} else {
+				data[o.dataKey] = _setTimeout(timeout, elem, delay);
+			}
 		};
 		
-		data[o.dataKey] = _setTimeout(timeout, _getSpeed(o));
+		timeout(window.mozAnimationStartTime || _now());
 	},
 	
 	/**
@@ -294,6 +312,7 @@
 		// clear any running timer
 		_clearTimeout(timer);
 		timer = data[o.dataKey] = null;
+		data[o.dataKey+'timestamp'] = _now();
 		
 		// assure with
 		if (o.width == 'auto') {
@@ -310,8 +329,11 @@
 		// set initial values
 		_transition(t, o);
 		
-		// start animation
-		_nextFrame(t, o);
+		// start animation in a seperate context
+		// to prevent call stack build from stopping here
+		w.setTimeout(function startFrameAnimation () {
+			_nextFrame(t, o);
+		});
 		
 		// return current scope
 		return this;
