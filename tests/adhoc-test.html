@@ -50,13 +50,23 @@
 		
 		var 
 		
+		_firstFrame = null,
+		
 		_animation = function (param) {
 			$('#animation').spriteAnimation(param || {
 				rows:10,
-				speed:40,
+				speed:10,
 				delay:500,
+				frameAnimation: true,
+				frameComplete: function (options) {
+					if (!_firstFrame) {
+						_firstFrame = $.now();
+					}
+					console.log('[#animation] frame ' + options.current.index + ' ' +  $.now());
+				},
 				iterationComplete: function (options) {
-					console.log('[#animation] iteration ' + (options.current.iteration-1) + ' ended');
+					console.log('[#animation] iteration ' + (options.current.iteration-1) + ' ended. Took ' + ($.now() - _firstFrame) + 'ms' );
+					_firstFrame = null;
 				},
 				animationComplete: function (options) {
 					console.error('[#animation] animation ended will never be called, since it never ends');
@@ -86,7 +96,7 @@
 			//$(window).load(function () {
 				_animation();
 				
-				$('#animation2').spriteAnimation({
+				/*$('#animation2').spriteAnimation({
 					rows:10,
 					speed:1000,
 					delay:10,
@@ -113,7 +123,7 @@
 					animationComplete: function (options) {
 						console.log('[#animation3] animation ended');
 					}
-				});
+				});*/
 			//});
 			$('#animation-stop').click(stopClick);
 			$('#animation-start').click(startClick);

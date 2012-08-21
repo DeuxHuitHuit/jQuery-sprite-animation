@@ -29,6 +29,7 @@
 				startRow: 0,    // start row offset
 				dataKey: 'sprite-animation',
 				count: function () { return this.cols * this.rows; },
+				frameAnimation: true, // set to false to force the use of setTimeout
 				frameComplete: null, // callback on each frame
 				iterationComplete: null, // callback at the end of each iteration
 				animationComplete: null // callback at the end of the animation (after all iterations)
@@ -51,6 +52,10 @@
 				w.msCancelRequestAnimationFrame,
 				
 	useReqAnFrm = !!reqAnFrm && !!cancelReqAnFrm,
+	
+	mustUseReqAnFrm = function (options) {
+		return options.frameAnimation && useReqAnFrm;
+	},
 	
 	/**
 	 * Patching older version of jQuery
@@ -80,15 +85,6 @@
 	 */
 	_createBackgroundPosition = function (x, y) {
 		return x + 'px ' + y + 'px';
-	},
-	
-	/**
-	 * Utility method for getting the current timestamp
-	 * 
-	 * @returns integer (in ms since January 1st, 1970)
-	 */
-	_now = function () {
-		return (new Date()).getTime();
 	},
 	
 	/**
@@ -183,14 +179,14 @@
 		return speed;
 	},
 	
-	_setTimeout = function (fx, elem, delay) {
-		var frm = reqAnFrm || w.setTimeout;
+	_setTimeout = function (fx, elem, delay, o) {
+		var frm = mustUseReqAnFrm(o) ? reqAnFrm : w.setTimeout;
 
 		return frm(fx, useReqAnFrm ? elem : delay);
 	},
 
-	_clearTimeout = function (timeout) {
-		var frm = cancelReqAnFrm || w.clearTimeout;
+	_clearTimeout = function (timeout, o) {
+		var frm = mustUseReqAnFrm(o) ? cancelReqAnFrm : w.clearTimeout;
 
 		return frm(timeout);
 	},
@@ -207,22 +203,24 @@
 		data = elem.data(),
 		delay = _getSpeed(o),
 		// use FF timestamp or now
-		start = w.mozAnimationStartTime || _now(),
+		start = w.mozAnimationStartTime || $.now(),
+		// frame check
+		// this function is the timeout callback
 		frame = function (timestamp) {
-			var n = timestamp || _now(), // take UA timestamp, if available
+			var n = timestamp || $.now(), // take UA timestamp, if available
 				diff = n - data[o.dataKey+'timestamp'],
-				ratio = Math.floor(diff/delay),
+				ratio = Math.round(diff/delay),
 				i;
 				
 			if (!delay || ratio >= 1) {
-				data[o.dataKey+'timestamp'] = n;
 				// this loops assure sync animations
-				// when the fps can't be acheived
+				// when the requested fps can't be achieved
 				for (i = 0; i < (ratio || 1); i++) {
-					_animate(elem, o, i === ratio-1);
+					_animate(elem, o, data, i === ratio-1 || o.current.ite);
 				}
+				
 			} else {
-				data[o.dataKey] = _setTimeout(frame, elem, delay);
+				data[o.dataKey] = _setTimeout(frame, elem, delay, o);
 			}
 		};
 		// start polling now
@@ -246,10 +244,11 @@
 	 * 
 	 * @param elem - the target jQuery object
 	 * @param o - options
+	 * @param data - the element's related data object
 	 * @param scheduleTimer - tells the method to call _nextFrame
 	 * @returns null
 	 */
-	_animate = function (elem, o, scheduleTimer) {
+	_animate = function (elem, o, data, scheduleTimer) {
 		
 		// calculate our new values
 		var shouldAdvance = _preAnimate(o);
@@ -259,8 +258,10 @@
 		
 		// next step
 		if (shouldAdvance.shouldAdvance) {
+			
 			// frame callback
-			if ($.isFunction(o.frameComplete)) {
+			// only if a new schedule is planned
+			if (scheduleTimer && $.isFunction(o.frameComplete)) {
 				o.frameComplete.call(elem, o);
 			}
 			
@@ -271,6 +272,10 @@
 			
 			// if we need to schedule for repaint
 			if (scheduleTimer) {
+				// update timestamp
+				data[o.dataKey+'timestamp'] = $.now();
+				
+				// request next frame
 				_nextFrame(elem, o);
 			}
 			
@@ -280,7 +285,7 @@
 				o.animationComplete.call(elem, o);
 			}
 		}
-		
+		return shouldAdvance;
 	};
 	// end var block
 	
@@ -299,7 +304,8 @@
 		
 		// check if options passed is a stop command
 		if (options === 'stop') {
-			_clearTimeout(timer);
+			o = data[o.dataKey + '-options'];
+			_clearTimeout(timer, o);
 			timer = data[o.dataKey] = null;
 			return this;
 		// or a start command
@@ -324,9 +330,9 @@
 		});
 		
 		// clear any running timer
-		_clearTimeout(timer);
+		_clearTimeout(timer, o);
 		timer = data[o.dataKey] = null;
-		data[o.dataKey+'timestamp'] = _now();
+		data[o.dataKey+'timestamp'] = $.now();
 		
 		// assure with
 		if (o.width == 'auto') {
