@@ -30,6 +30,7 @@
 				dataKey: 'sprite-animation',
 				count: function () { return this.cols * this.rows; },
 				frameAnimation: true, // set to false to force the use of setTimeout
+				beforeFrame: null,   // callback before each frame
 				frameComplete: null, // callback on each frame
 				iterationComplete: null, // callback at the end of each iteration
 				animationComplete: null // callback at the end of the animation (after all iterations)
@@ -65,6 +66,8 @@
 	 */ 
 	_isNumeric = function (val) {
 		var isNum = false;
+		// should we really need jQuery here,
+		// since the WHOLE code as been rewritten ?
 		if ($.isFunction($.isNumeric)) {
 			isNum = $.isNumeric(val);
 		} else if ($.isFunction($.isNaN)) {
@@ -127,9 +130,15 @@
 		} 
 		
 		// detect col overflow
+		// checking rowOveflow is unnesscary since we will have end oveflow
 		else if (colOverflow && !rowOverflow) {
 			o.current.row++;
 			o.current.col = 0;
+		}
+		
+		// detect row overflow
+		else if (rowOverflow) {
+			// is this possible ???
 		}
 		
 		// advance
@@ -179,12 +188,32 @@
 		return speed;
 	},
 	
-	_setTimeout = function (fx, elem, delay, o) {
+	/**
+	 * Utility function that wraps capabilities
+	 * of window.requestAnimationFrame and window.setTimeout.
+	 * The implementation used depends on the UA and options.
+	 * 
+	 * @param fx - the callback function 
+	 * @param elem - the element to be animated
+	 * @param o - options
+	 * @param time - the time for the setTimeout function
+	 * @returns number - timer handle, if given by the UA
+	 */
+	_setTimeout = function (fx, elem, o, time) {
 		var frm = mustUseReqAnFrm(o) ? reqAnFrm : w.setTimeout;
 
-		return frm(fx, useReqAnFrm ? elem : delay);
+		return frm(fx, mustUseReqAnFrm(o) ? elem : time);
 	},
 
+	/**
+	 * Utility function that wraps capabilities
+	 * of window.cancelAnimationFrame and window.clearTimeout.
+	 * The implementation used depends on the UA and options.
+	 * 
+	 * @param timeout - the timer handle
+	 * @param o - options
+	 * @returns null
+	 */
 	_clearTimeout = function (timeout, o) {
 		var frm = mustUseReqAnFrm(o) ? cancelReqAnFrm : w.clearTimeout;
 
@@ -192,39 +221,60 @@
 	},
 	
 	/**
-	 * Utility function for the timer (next frame)
+	 * Utility function for the timer (next animation frame).
+	 * This function is called at each end of animation
+	 * and handles the tick.
 	 * 
 	 * @param elem - the target jQuery object
 	 * @param o - options
-	 * @returns null
+	 * @returns object - the result of _preAnimate
 	 */
 	_nextFrame = function (elem, o) {
 		var 
 		data = elem.data(),
-		delay = _getSpeed(o),
 		// use FF timestamp or now
 		start = w.mozAnimationStartTime || $.now(),
 		// frame check
 		// this function is the timeout callback
-		frame = function (timestamp) {
-			var n = timestamp || $.now(), // take UA timestamp, if available
+		tick = function (timestamp) {
+			var delay = _getSpeed(o),
+				n = timestamp || $.now(), // take UA timestamp, if available
 				diff = n - data[o.dataKey+'timestamp'],
 				ratio = Math.round(diff/delay),
-				i;
+				i = 0;
 				
 			if (!delay || ratio >= 1) {
+				// update timestamp now
+				// the be able to time the time
+				// taken by our code
+				data[o.dataKey+'timestamp'] = $.now();
+			
 				// this loops assure sync animations
 				// when the requested fps can't be achieved
-				for (i = 0; i < (ratio || 1); i++) {
-					_animate(elem, o, data, i === ratio-1 || o.current.ite);
+				for (; i < (ratio || 1); i++) {
+					var res = _animate(elem, o, data, i === ratio-1);
+					
+					if (!res.shouldAdvance || res.iterationEnd) {
+						if (res.iterationEnd) {
+							nextTick(delay);
+						}
+						break;
+					}
 				}
 				
 			} else {
-				data[o.dataKey] = _setTimeout(frame, elem, delay, o);
+				console.log('skip');
+				nextTick(delay);
 			}
+		},
+		nextTick = function (delay) {
+			data[o.dataKey] = _setTimeout(tick, elem, o, delay);
 		};
+		
+		data[o.dataKey+'timestamp'] = start;
+		
 		// start polling now
-		frame(start);
+		tick(start);
 	},
 	
 	/**
@@ -250,6 +300,11 @@
 	 */
 	_animate = function (elem, o, data, scheduleTimer) {
 		
+		// before frame callback
+		if ($.isFunction(o.beforeFrame)) {
+			o.beforeFrame.call(elem, o);
+		}
+		
 		// calculate our new values
 		var shouldAdvance = _preAnimate(o);
 		
@@ -272,8 +327,6 @@
 			
 			// if we need to schedule for repaint
 			if (scheduleTimer) {
-				// update timestamp
-				data[o.dataKey+'timestamp'] = $.now();
 				
 				// request next frame
 				_nextFrame(elem, o);
@@ -331,8 +384,7 @@
 		
 		// clear any running timer
 		_clearTimeout(timer, o);
-		timer = data[o.dataKey] = null;
-		data[o.dataKey+'timestamp'] = $.now();
+		timer = null;
 		
 		// assure with
 		if (o.width == 'auto') {

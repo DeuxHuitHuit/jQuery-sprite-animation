@@ -55,14 +55,14 @@
 		_animation = function (param) {
 			$('#animation').spriteAnimation(param || {
 				rows:10,
-				speed:10,
+				speed:25,
 				delay:500,
 				frameAnimation: true,
-				frameComplete: function (options) {
+				beforeFrame: function (options) {
 					if (!_firstFrame) {
 						_firstFrame = $.now();
 					}
-					console.log('[#animation] frame ' + options.current.index + ' ' +  $.now());
+					//console.log('[#animation] before frame ' + options.current.index + ' ' +  $.now());
 				},
 				iterationComplete: function (options) {
 					console.log('[#animation] iteration ' + (options.current.iteration-1) + ' ended. Took ' + ($.now() - _firstFrame) + 'ms' );
