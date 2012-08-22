@@ -262,12 +262,12 @@
 				}
 				
 				if (res.shouldAdvance) {
-					nextTick(_getSpeed(o));
+					nextTick(_getSpeed(o) );
 				}
 				
 			} else {
 				//console.log('skip');
-				nextTick(_getSpeed(o));
+				nextTick(_getSpeed(o) );
 			}
 		},
 		nextTick = function (delay) {
@@ -398,6 +398,11 @@
 		
 		// get start time
 		data[o.dataKey+'timestamp'] = $.now();
+		
+		// call the start callback
+		if ($.isFunction(o.start)) {
+			o.start.call(t, o, data[o.dataKey+'timestamp']);
+		}
 		
 		// start animation in a seperate context
 		// to prevent call stack build from stopping here
