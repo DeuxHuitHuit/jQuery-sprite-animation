@@ -95,7 +95,7 @@
 	 * Returns true if it does, based on the given options.
 	 * 
 	 * @param o - options
-	 * @returns boolean
+	 * @returns object
 	 */
 	_preAnimate = function (o) {
 		// increment index, always
@@ -139,6 +139,7 @@
 		// detect row overflow
 		else if (rowOverflow) {
 			// is this possible ???
+			var t = w.console||w.console.error('row overflow');
 		}
 		
 		// advance
@@ -162,7 +163,7 @@
 	 * @returns number - in ms
 	 */
 	_getSpeed = function (o) {
-		var speed;
+		var speed = null;
 		
 		// evaluate fps
 		if (_isNumeric(o.fps) && o.fps > 0) {
@@ -240,38 +241,38 @@
 			var delay = _getSpeed(o),
 				n = timestamp || $.now(), // take UA timestamp, if available
 				diff = n - data[o.dataKey+'timestamp'],
-				ratio = Math.round(diff/delay),
-				i = 0;
+				ratio = Math.floor(diff/delay),
+				i = 0,
+				res = null;
 				
 			if (!delay || ratio >= 1) {
 				// update timestamp now
 				// the be able to time the time
 				// taken by our code
-				data[o.dataKey+'timestamp'] = $.now();
+				data[o.dataKey+'timestamp'] = n;
 			
 				// this loops assure sync animations
 				// when the requested fps can't be achieved
 				for (; i < (ratio || 1); i++) {
-					var res = _animate(elem, o, data, i === ratio-1);
+					res = _animate(elem, o, data, n, i === ratio-1);
 					
 					if (!res.shouldAdvance || res.iterationEnd) {
-						if (res.iterationEnd) {
-							nextTick(delay);
-						}
 						break;
 					}
 				}
 				
+				if (res.shouldAdvance) {
+					nextTick(_getSpeed(o));
+				}
+				
 			} else {
-				console.log('skip');
-				nextTick(delay);
+				//console.log('skip');
+				nextTick(_getSpeed(o));
 			}
 		},
 		nextTick = function (delay) {
 			data[o.dataKey] = _setTimeout(tick, elem, o, delay);
 		};
-		
-		data[o.dataKey+'timestamp'] = start;
 		
 		// start polling now
 		tick(start);
@@ -295,14 +296,15 @@
 	 * @param elem - the target jQuery object
 	 * @param o - options
 	 * @param data - the element's related data object
+	 * @param timestamp - the current time
 	 * @param scheduleTimer - tells the method to call _nextFrame
 	 * @returns null
 	 */
-	_animate = function (elem, o, data, scheduleTimer) {
+	_animate = function (elem, o, data, timestamp, scheduleTimer) {
 		
 		// before frame callback
 		if ($.isFunction(o.beforeFrame)) {
-			o.beforeFrame.call(elem, o);
+			o.beforeFrame.call(elem, o, timestamp);
 		}
 		
 		// calculate our new values
@@ -317,25 +319,18 @@
 			// frame callback
 			// only if a new schedule is planned
 			if (scheduleTimer && $.isFunction(o.frameComplete)) {
-				o.frameComplete.call(elem, o);
+				o.frameComplete.call(elem, o, timestamp);
 			}
 			
 			// iteration callback
 			if (shouldAdvance.iterationEnd && $.isFunction(o.iterationComplete)) {
-				o.iterationComplete.call(elem, o);
+				o.iterationComplete.call(elem, o, timestamp);
 			}
-			
-			// if we need to schedule for repaint
-			if (scheduleTimer) {
-				
-				// request next frame
-				_nextFrame(elem, o);
-			}
-			
+
 		} else {
 			// animation ended callabck
 			if ($.isFunction(o.animationComplete)) {
-				o.animationComplete.call(elem, o);
+				o.animationComplete.call(elem, o, timestamp);
 			}
 		}
 		return shouldAdvance;
@@ -400,6 +395,9 @@
 		
 		// set initial values
 		_transition(t, o);
+		
+		// get start time
+		data[o.dataKey+'timestamp'] = $.now();
 		
 		// start animation in a seperate context
 		// to prevent call stack build from stopping here

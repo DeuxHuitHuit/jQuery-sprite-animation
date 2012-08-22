@@ -55,20 +55,20 @@
 		_animation = function (param) {
 			$('#animation').spriteAnimation(param || {
 				rows:10,
-				speed:25,
+				speed:50,
 				delay:500,
 				frameAnimation: true,
-				beforeFrame: function (options) {
+				beforeFrame: function (options, timestamp) {
 					if (!_firstFrame) {
-						_firstFrame = $.now();
+						_firstFrame = timestamp;
 					}
-					//console.log('[#animation] before frame ' + options.current.index + ' ' +  $.now());
+					console.log('[#animation] before frame ' + options.current.index + ' ' + timestamp);
 				},
-				iterationComplete: function (options) {
-					console.log('[#animation] iteration ' + (options.current.iteration-1) + ' ended. Took ' + ($.now() - _firstFrame) + 'ms' );
+				iterationComplete: function (options, timestamp) {
+					console.log('[#animation] iteration ' + (options.current.iteration-1) + ' ended. Took ' + (timestamp - _firstFrame) + 'ms' );
 					_firstFrame = null;
 				},
-				animationComplete: function (options) {
+				animationComplete: function (options, timestamp) {
 					console.error('[#animation] animation ended will never be called, since it never ends');
 				}
 			});
