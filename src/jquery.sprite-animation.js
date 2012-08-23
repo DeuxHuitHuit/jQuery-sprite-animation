@@ -236,20 +236,23 @@
 		// use FF timestamp or now
 		start = w.mozAnimationStartTime || $.now(),
 		// frame check
-		// this function is the timeout callback
+		// this function is the timeout/raf callback
 		tick = function (timestamp) {
 			var delay = _getSpeed(o),
 				n = timestamp || $.now(), // take UA timestamp, if available
-				diff = n - data[o.dataKey+'timestamp'],
+				lastN = data[o.dataKey+'-timestamp'],
+				diff = n - lastN,
 				ratio = Math.floor(diff/delay),
 				i = 0,
 				res = null;
 				
+			//console.log(diff);
+				
 			if (!delay || ratio >= 1) {
 				// update timestamp now
-				// the be able to time the time
+				// the be able to compute the time
 				// taken by our code
-				data[o.dataKey+'timestamp'] = n;
+				data[o.dataKey+'-timestamp'] = n;
 			
 				// this loops assure sync animations
 				// when the requested fps can't be achieved
@@ -262,16 +265,17 @@
 				}
 				
 				if (res.shouldAdvance) {
-					nextTick(_getSpeed(o) );
+					nextTick(delay);
 				}
+				console.log(diff + ' ' + delay);
 				
 			} else {
-				//console.log('skip');
+				console.log('skip ' + diff);
 				nextTick(_getSpeed(o) );
 			}
 		},
 		nextTick = function (delay) {
-			data[o.dataKey] = _setTimeout(tick, elem, o, delay);
+			data[o.dataKey+'-timer'] = _setTimeout(tick, elem, o, delay);
 		};
 		
 		// start polling now
@@ -348,17 +352,17 @@
 		var o = $.extend({}, $.spriteAnimation.defaults, options),
 			t = $(this),
 			data = t.data(),
-			timer = data[o.dataKey];
+			timer = data[o.dataKey+'-timer'];
 		
 		// check if options passed is a stop command
 		if (options === 'stop') {
-			o = data[o.dataKey + '-options'];
+			o = data[o.dataKey+'-options'];
 			_clearTimeout(timer, o);
-			timer = data[o.dataKey] = null;
+			timer = data[o.dataKey+'-timer'] = null;
 			return this;
 		// or a start command
 		} else if (options === 'start') {
-			o = data[o.dataKey + '-options'];
+			o = data[o.dataKey+'-options'];
 			if (!timer && !!o) {
 				_nextFrame(t, o);
 			}
@@ -391,24 +395,24 @@
 		}
 		
 		// Save options
-		data[o.dataKey + '-options'] = o;
+		data[o.dataKey+'-options'] = o;
 		
 		// set initial values
 		_transition(t, o);
 		
 		// get start time
-		data[o.dataKey+'timestamp'] = $.now();
+		data[o.dataKey+'-timestamp'] = $.now();
 		
 		// call the start callback
 		if ($.isFunction(o.start)) {
-			o.start.call(t, o, data[o.dataKey+'timestamp']);
+			o.start.call(t, o, data[o.dataKey+'-timestamp']);
 		}
 		
-		// start animation in a seperate context
-		// to prevent call stack build from stopping here
+		// start animation in a seperate context (in the event queue)
+		// to prevent call stack build up from here
 		w.setTimeout(function startFrameAnimation () {
 			_nextFrame(t, o);
-		});
+		}, 0);
 		
 		// return current scope
 		return this;
