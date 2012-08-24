@@ -58,6 +58,9 @@
 				speed:200,
 				delay:500,
 				frameAnimation: false,
+				start: function (options, timestamp) {
+					_firstFrame = timestamp;
+				},
 				beforeFrame: function (options, timestamp) {
 					if (!_firstFrame) {
 						_firstFrame = timestamp;

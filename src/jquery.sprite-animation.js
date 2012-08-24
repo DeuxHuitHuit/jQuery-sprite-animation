@@ -221,6 +221,8 @@
 		return frm(timeout);
 	},
 	
+	
+	
 	/**
 	 * Utility function for the timer (next animation frame).
 	 * This function is called at each end of animation
@@ -265,13 +267,13 @@
 				}
 				
 				if (res.shouldAdvance) {
-					nextTick(delay);
+					nextTick(2*_getSpeed(o) - diff);
 				}
-				console.log(diff + ' ' + delay);
+				console.log(diff + ' ' + delay + ' ' + (2*_getSpeed(o) - diff));
 				
 			} else {
-				console.log('skip ' + diff);
-				nextTick(_getSpeed(o) );
+				console.log('skip ' + diff + ' ' + delay + ' ' + (delay - diff));
+				nextTick( delay - diff );
 			}
 		},
 		nextTick = function (delay) {
@@ -360,6 +362,7 @@
 			_clearTimeout(timer, o);
 			timer = data[o.dataKey+'-timer'] = null;
 			return this;
+		
 		// or a start command
 		} else if (options === 'start') {
 			o = data[o.dataKey+'-options'];
