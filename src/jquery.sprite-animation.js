@@ -137,7 +137,7 @@
 		} 
 		
 		// detect col overflow
-		// checking rowOveflow is unnesscary since we will have end oveflow
+		// checking rowOveflow is unnecessary since we will have end overflow
 		else if (colOverflow && !rowOverflow) {
 			o.current.row++;
 			o.current.col = 0;
@@ -340,7 +340,7 @@
 			}
 
 		} else {
-			// animation ended callabck
+			// animation ended callback
 			if ($.isFunction(o.animationComplete)) {
 				o.animationComplete.call(elem, o, timestamp);
 			}
@@ -417,7 +417,7 @@
 			o.start.call(t, o, data[o.dataKey+'-timestamp']);
 		}
 		
-		// start animation in a seperate context (in the event queue)
+		// start animation in a separate context (in the event queue)
 		// to prevent call stack build up from here
 		w.setTimeout(function startFrameAnimation () {
 			_nextFrame(t, o);
