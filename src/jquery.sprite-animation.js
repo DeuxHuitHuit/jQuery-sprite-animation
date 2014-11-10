@@ -54,6 +54,8 @@
 				
 	useReqAnFrm = !!reqAnFrm && !!cancelReqAnFrm,
 	
+	now = performance.now || $.now,
+	
 	mustUseReqAnFrm = function (options) {
 		return options.frameAnimation && useReqAnFrm;
 	},
@@ -235,13 +237,12 @@
 	_nextFrame = function (elem, o) {
 		var 
 		data = elem.data(),
-		// use FF timestamp or now
-		start = w.mozAnimationStartTime || $.now(),
+		start = now(),
 		// frame check
 		// this function is the timeout/raf callback
-		tick = function (timestamp) {
+		tick = function () {
 			var delay = _getSpeed(o),
-				n = timestamp || $.now(), // take UA timestamp, if available
+				n = now(),
 				lastN = data[o.dataKey+'-timestamp'],
 				diff = n - lastN,
 				ratio = Math.floor(diff/delay),
@@ -404,7 +405,7 @@
 		_transition(t, o);
 		
 		// get start time
-		data[o.dataKey+'-timestamp'] = $.now();
+		data[o.dataKey+'-timestamp'] = now();
 		
 		// call the start callback
 		if ($.isFunction(o.start)) {
