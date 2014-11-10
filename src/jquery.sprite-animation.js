@@ -54,7 +54,12 @@
 				
 	useReqAnFrm = !!reqAnFrm && !!cancelReqAnFrm,
 	
-	now = performance.now || $.now,
+	now = function () {
+		if (!!performance.now) {
+			return performance.now();
+		}
+		return $.now();
+	},
 	
 	mustUseReqAnFrm = function (options) {
 		return options.frameAnimation && useReqAnFrm;
