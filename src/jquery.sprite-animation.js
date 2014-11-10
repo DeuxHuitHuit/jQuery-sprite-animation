@@ -275,10 +275,10 @@
 				if (res.shouldAdvance) {
 					nextTick(2*_getSpeed(o) - diff);
 				}
-				console.log(diff + ' ' + delay + ' ' + (2*_getSpeed(o) - diff));
+				//console.log(diff + ' ' + delay + ' ' + (2*_getSpeed(o) - diff));
 				
 			} else {
-				console.log('skip ' + diff + ' ' + delay + ' ' + (delay - diff));
+				//console.log('skip ' + diff + ' ' + delay + ' ' + (delay - diff));
 				nextTick( delay - diff );
 			}
 		},
