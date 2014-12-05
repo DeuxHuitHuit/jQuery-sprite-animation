@@ -55,7 +55,7 @@
 	useReqAnFrm = !!reqAnFrm && !!cancelReqAnFrm,
 	
 	now = function () {
-		if (!!performance.now) {
+		if (!!window.performance && !!performance.now) {
 			return performance.now();
 		}
 		return $.now();
