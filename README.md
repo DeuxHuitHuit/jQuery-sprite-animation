@@ -21,6 +21,7 @@ $('.element').spriteAnimation(defaults : {
 	height: 'auto', // auto | number of pixel per step
 	startCol: 0,    // start col offset
 	startRow: 0,    // start row offset
+	endOnLastFrame: false, // ends on last frame instead of the first
 	dataKey: 'sprite-animation',
 	count: function () { return this.cols * this.rows; },
 	frameAnimation: true, // set to false to force the use of setTimeout

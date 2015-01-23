@@ -25,6 +25,7 @@
 		<h4>Infinite</h4>
 		<div id="animation" class="animation"></div>
 		<p>
+			<a id="animation-init" href="#">Init</a>
 			<a id="animation-stop" href="#">Stop</a>
 			<a id="animation-start" href="#">Start</a>
 			<a id="animation-reset" href="#">Reset</a>
@@ -77,6 +78,12 @@
 			});
 		},
 		
+		initClick = function (e) {
+			_animation();
+			e.preventDefault();
+			return false;
+		},
+		
 		startClick = function (e) {
 			_animation('start');
 			e.preventDefault();
@@ -97,13 +104,14 @@
 		
 		init = function () {
 			//$(window).load(function () {
-				_animation();
+				//_animation();
 				
-				/*$('#animation2').spriteAnimation({
+				$('#animation2').spriteAnimation({
 					rows:10,
 					speed:1000,
 					delay:10,
 					iterations:1,
+					endOnLastFrame: true,
 					iterationComplete: function (options) {
 						console.error('[#animation2] should never get called');
 					},
@@ -115,7 +123,7 @@
 					}
 				});
 				
-				$('#animation10').spriteAnimation({
+				/*$('#animation10').spriteAnimation({
 					rows:10,
 					fps:60,
 					delay:0,
@@ -131,7 +139,7 @@
 			$('#animation-stop').click(stopClick);
 			$('#animation-start').click(startClick);
 			$('#animation-reset').click(resetClick);
-
+			$('#animation-init').click(initClick);
 		};
 		
 		$(init);

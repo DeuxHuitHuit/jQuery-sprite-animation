@@ -27,6 +27,7 @@
 				height: 'auto', // auto | number of pixel per step
 				startCol: 0,    // start col offset
 				startRow: 0,    // start row offset
+				endOnLastFrame: false, // ends on last frame instead of the first
 				dataKey: 'sprite-animation',
 				count: function () { return this.cols * this.rows; },
 				frameAnimation: true, // set to false to force the use of setTimeout
@@ -273,13 +274,13 @@
 				}
 				
 				if (res.shouldAdvance) {
-					nextTick(2*_getSpeed(o) - diff);
+					nextTick(_getSpeed(o) - diff);
 				}
-				//console.log(diff + ' ' + delay + ' ' + (2*_getSpeed(o) - diff));
+				//console.log(diff + ' ' + delay + ' ' + (_getSpeed(o) - diff));
 				
 			} else {
 				//console.log('skip ' + diff + ' ' + delay + ' ' + (delay - diff));
-				nextTick( delay - diff );
+				nextTick(delay - diff);
 			}
 		},
 		nextTick = function (delay) {
@@ -322,8 +323,10 @@
 		// calculate our new values
 		var shouldAdvance = _preAnimate(o);
 		
-		// actual transition
-		_transition(elem, o);
+		if (shouldAdvance.shouldAdvance || (!shouldAdvance.shouldAdvance && !o.endOnLastFrame)) {
+			// actual transition
+			_transition(elem, o);
+		}
 		
 		// next step
 		if (shouldAdvance.shouldAdvance) {
