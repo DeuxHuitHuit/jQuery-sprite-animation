@@ -1,7 +1,6 @@
 # jQuery Sprite Animation [![Build Status](https://secure.travis-ci.org/DeuxHuitHuit/jQuery-sprite-animation.png?branch=master)](http://travis-ci.org/DeuxHuitHuit/jQuery-sprite-animation) 
 
-
-jQuery plugin that quickly enables you to create 'gif' style animation with a png/jpeg sprite
+> jQuery plugin that quickly enables you to create 'gif' style animation with a png/jpeg sprite
 
 ## Usage
 
@@ -31,4 +30,11 @@ $('.element').spriteAnimation(defaults : {
 	animationComplete: null // callback at the end of the animation (after all iterations)
 });
 
+```
+
+## Methods
+
+```js
+$('.element').spriteAnimation('stop');
+$('.element').spriteAnimation('start');
 ```

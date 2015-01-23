@@ -2,7 +2,7 @@
   "name": "jquery.sprite-animation",
   "title": "jQuery Sprite Animation",
   "description": "jQuery plugin that quickly enables you to create 'gif' style animation with a png/jpeg sprite",
-  "version": "1.0.2",
+  "version": "1.1.0",
   "homepage": "https://github.com/DeuxHuitHuit/jQuery-sprite-animation",
   "author": {
     "name": "Deux Huit Huit",
@@ -22,7 +22,7 @@
     }
   ],
   "dependencies": {
-	"grunt": "~0.3.9"
+    "grunt": "~0.3.9"
   },
   "keywords": []
 }
